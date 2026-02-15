@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law Pro: องค์ประกอบภายใน (Internal Elements)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc; /* ขาวอมฟ้าจางๆ */
+            --card-bg: #ffffff;
+            --primary: #1e3a8a; /* น้ำเงินเข้ม (Royal Blue) */
+            --primary-light: #3b82f6; /* ฟ้าสว่าง */
+            --accent: #f59e0b; /* ส้มทอง (ตัดเลี่ยน) */
+            --text-main: #1e293b; /* เทาเข้มเกือบดำ */
+            --text-light: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.7;
+            position: relative;
+            background-image: radial-gradient(#e0f2fe 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* ปุ่มกลับหน้าหลัก */
+        .back-btn {
+            position: absolute; top: 15px; left: 15px;
+            text-decoration: none; color: var(--primary);
+            background: white; padding: 8px 15px;
+            border-radius: 30px; font-size: 0.9rem; font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s; border: 2px solid var(--primary);
+            z-index: 100;
+        }
+        .back-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+
+        .container { max-width: 900px; width: 100%; margin-top: 50px; }
+
+        h1 {
+            text-align: center; color: var(--primary);
+            font-weight: 800; font-size: 2.5rem;
+            letter-spacing: -1px; margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .subtitle { text-align: center; color: var(--text-light); margin-bottom: 30px; font-size: 1.1rem; }
+
+        /* TABS */
+        .tabs {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;
+            background: white; padding: 10px; border-radius: 15px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        .tab-btn {
+            border: none; padding: 12px 20px; background: transparent;
+            color: var(--text-light); font-family: 'Prompt', sans-serif;
+            font-weight: 600; cursor: pointer; border-radius: 10px;
+            transition: 0.3s;
+        }
+        .tab-btn:hover { background: #eff6ff; color: var(--primary); }
+        .tab-btn.active {
+            background: var(--primary); color: white;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+
+        /* CONTENT SECTIONS */
+        .section { display: none; animation: slideUp 0.5s ease-out; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* STUDY CARD STYLE */
+        .study-card {
+            background: white; border-radius: 16px; margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-left: 6px solid var(--primary); overflow: hidden;
+        }
+        details summary {
+            cursor: pointer; padding: 20px; font-weight: 700; color: var(--primary);
+            font-size: 1.1rem; list-style: none; display: flex; justify-content: space-between;
+            align-items: center; background: #f8fafc;
+        }
+        details summary:hover { background: #eff6ff; }
+        details summary::after { content: '+'; font-size: 1.5rem; transition: 0.3s; }
+        details[open] summary::after { transform: rotate(45deg); }
+        .study-content { padding: 25px; color: #334155; }
+        
+        .highlight { color: var(--primary); background: #dbeafe; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .accent-text { color: var(--accent); font-weight: bold; }
+
+        /* ฎีกา Box */
+        .dika-box {
+            background: #fffbeb; border: 2px dashed var(--accent);
+            padding: 15px; margin: 15px 0; border-radius: 10px;
+            font-style: italic; color: #78350f; font-size: 0.95rem;
+        }
+
+        /* ================= GAME STYLES ================= */
+        .game-board {
+            background: white; border-radius: 20px; padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center; position: relative; border: 1px solid #e2e8f0;
+            min-height: 400px;
+        }
+
+        /* GAME 1: Mind Analyzer (Animation) */
+        .brain-container {
+            width: 100px; height: 100px; margin: 0 auto 20px;
+            background: #e0e7ff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+        
+        .scenario-text { font-size: 1.2rem; font-weight: bold; margin-bottom: 25px; color: var(--text-main); min-height: 80px; }
+        .intent-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .intent-btn {
+            padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; font-weight: 600; color: var(--text-light); cursor: pointer;
+            transition: all 0.2s; font-family: 'Prompt', sans-serif;
+        }
+        .intent-btn:hover { border-color: var(--primary); color: var(--primary); background: #eff6ff; }
+
+        /* GAME 2: Special Intent Hunt (Cards) */
+        .card-stack { perspective: 1000px; margin-top: 20px; }
+        .flip-card {
+            background: white; border: 2px solid var(--primary); padding: 20px;
+            border-radius: 15px; cursor: pointer; margin-bottom: 10px;
+            transition: transform 0.6s; transform-style: preserve-3d;
+        }
+        .flip-card.flipped { transform: rotateY(180deg); background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* GAME 3: Dika Survivor (Hardcore) */
+        .survivor-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        .survivor-fill { height: 100%; background: var(--error); width: 100%; transition: width 0.3s; }
+        
+        .feedback-popup {
+            margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .feedback-popup.correct { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
+        .feedback-popup.wrong { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+
+        /* Next Button */
+        .next-btn {
+            width: 100%; padding: 15px; background: var(--primary); color: white;
+            border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem;
+            margin-top: 20px; cursor: pointer; display: none;
+            box-shadow: 0 4px 0 #1e3a8a; transform: translateY(0); transition: 0.1s;
+        }
+        .next-btn:active { transform: translateY(4px); box-shadow: none; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
+
+    <div class="container">
+        <h1>Criminal Law Pro</h1>
+        <div class="subtitle">บทที่ 3: องค์ประกอบภายใน (Internal Elements)</div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('study')">📖 ตำราวิชาการ (แน่นปึ้ก)</button>
+            <button class="tab-btn" onclick="switchTab('game1')">🧠 เครื่องอ่านใจ (Animation)</button>
+            <button class="tab-btn" onclick="switchTab('game2')">🎯 ล่าเจตนาพิเศษ</button>
+            <button class="tab-btn" onclick="switchTab('game3')">🔥 ฎีกา Survivor (โหด)</button>
+        </div>
+
+        <div id="study" class="section active">
+            <div class="study-card">
+                <details open>
+                    <summary>1. เจตนาธรรมดา (ม.59 ว.2)</summary>
+                    <div class="study-content">
+                        <p>ต้องรู้ข้อเท็จจริง (ม.59 ว.3) + (ประสงค์ต่อผล <strong>หรือ</strong> ย่อมเล็งเห็นผล)</p>
+                        <ul>
+                            <li><strong>เจตนาโดยตรง (ประสงค์ต่อผล):</strong> มุ่งหมายให้เกิดผลนั้นโดยตรง (Direct Intent)</li>
+                            <li><strong>เจตนาโดยอ้อม (ย่อมเล็งเห็นผล):</strong> ไม่ได้มุ่งหมาย แต่ <span class="highlight">เล็งเห็นได้ว่าผลนั้นจะเกิดขึ้นได้อย่างแน่นอน</span> (Foreseen Consequences)
+                                <div class="dika-box">
+                                    "ย่อมเล็งเห็นผล ไม่ใช่มุ่งถึงเจตนาผู้กระทำ แต่มุ่งถึงลักษณะการกระทำ ถ้าเล็งเห็นได้แน่นอน = เจตนา" (ฎีกา 9805/25xx)
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>2. เจตนาพิเศษ / มูลเหตุจูงใจ (Motive)</summary>
+                    <div class="study-content">
+                        <p>บางความผิดต้องการ <strong>"เจตนาเพื่อ..."</strong> นอกเหนือจากเจตนาธรรมดา เช่น:</p>
+                        <ul>
+                            <li><strong>ลักทรัพย์:</strong> ต้องมีเจตนาทุจริต (เพื่อแสวงหาประโยชน์...)</li>
+                            <li><strong>ปลอมเอกสาร:</strong> เพื่อให้ผู้หนึ่งผู้ใดหลงเชื่อ</li>
+                        </ul>
+                        <p class="accent-text">⚠️ กฎเหล็ก: ถ้าต้องมีเจตนาพิเศษ เจตนาธรรมดาต้องเป็น "ประสงค์ต่อผล" เท่านั้น! จะเล็งเห็นผลไม่ได้</p>
+                        <div class="dika-box">
+                            "มีเจตนาปลอมเอกสาร แต่ทำไปเพื่อให้เพื่อนเลี้ยงข้าวเท่านั้น (ไม่มีเจตนาพิเศษเพื่อให้ใครหลงเชื่อ) = ไม่ผิดฐานปลอมเอกสาร" (เทียบฎีกา 1240/2504)
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>3. ประมาท (ม.59 ว.4)</summary>
+                    <div class="study-content">
+                        <p>คือการกระทำโดย <strong>"ไม่มีเจตนา"</strong> แต่ปราศจากความระมัดระวัง ซึ่งบุคคลในภาวะเช่นนั้นจักต้องมีตามวิสัยและพฤติการณ์</p>
+                        <p><strong>ข้อควรระวัง:</strong> ประมาทในอาญา ต่างจาก ละเมิดในแพ่ง</p>
+                        <ul>
+                            <li><strong>อาญา:</strong> รู้สำนึก + (ไม่ประสงค์/ไม่เล็งเห็น) + ขาดระมัดระวัง</li>
+                            <li><strong>แพ่ง (จงใจ):</strong> รู้สำนึกถึงความเสียหาย (กว้างกว่าอาญา)</li>
+                        </ul>
+                        <div class="dika-box">
+                            "จำเลยทำร้ายผู้อื่นตายโดยไม่เจตนา (ม.290) ในทางอาญาไม่ใช่เจตนาฆ่า แต่ในทางแพ่งถือว่า 'จงใจ' ทำละเมิด จะอ้างว่าไม่จงใจไม่ได้" (ฎีกา 1104/2509)
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>4. เจตนาโอน (Transferred Intent)</summary>
+                    <div class="study-content">
+                        <p><strong>มาตรา 60 (การกระทำโดยพลาด):</strong> เจตนาต่อ A แต่ผลไปเกิดกับ B -> กฎหมายให้ถือว่ามีเจตนาต่อ B ด้วย</p>
+                        <p>เรียกว่า "เจตนาโดยผลของกฎหมาย" (Legal Intent)</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div id="game1" class="section">
+            <div class="game-board">
+                <div class="brain-container">🧠</div>
+                <h2 style="color:var(--primary); margin-bottom:10px;">เครื่องอ่านจิตใจ (Mind Reader)</h2>
+                <p style="color:var(--text-light); margin-bottom:20px;">จงวิเคราะห์ "สภาวะจิตใจ" ของผู้กระทำจากสถานการณ์ต่อไปนี้</p>
+                
+                <div class="scenario-text" id="g1-text">Loading...</div>
+                
+                <div class="intent-btn-grid" id="g1-options">
+                    </div>
+                
+                <div id="g1-feedback" class="feedback-popup"></div>
+                <button id="g1-next" class="next-btn" onclick="nextG1()">สถานการณ์ต่อไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game2" class="section">
+            <div class="game-board">
+                <div style="font-size:3rem; margin-bottom:10px;">🎯</div>
+                <h2 style="color:var(--primary);">ภารกิจล่าเจตนาพิเศษ</h2>
+                <p style="color:var(--text-light);">ข้อใดต้องมี "เจตนาพิเศษ" หรือขาดเจตนาพิเศษ? (ตอบถูกได้ไปต่อ)</p>
+                <div style="background:#f1f5f9; padding:10px; border-radius:10px; margin:20px 0; font-weight:bold; color:var(--error);" id="g2-life">❤️❤️❤️ Lives Left</div>
+
+                <div class="scenario-text" id="g2-text" style="font-size:1.1rem;">Loading...</div>
+                
+                <div id="g2-options" style="display:flex; flex-direction:column; gap:10px;"></div>
+                
+                <div id="g2-feedback" class="feedback-popup"></div>
+                <button id="g2-next" class="next-btn" onclick="nextG2()">ข้อต่อไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game3" class="section">
+            <div class="game-board" style="border-color:var(--error);">
+                <div style="font-size:3rem; margin-bottom:10px;">🔥</div>
+                <h2 style="color:var(--error);">ฎีกา Survivor</h2>
+                <p style="color:var(--text-light);">ตอบผิดข้อเดียว... ตกนรก (เริ่มใหม่) ทันที!</p>
+                <br>
+                <div class="survivor-bar"><div class="survivor-fill" id="g3-progress" style="width:0%"></div></div>
+                
+                <div class="scenario-text" id="g3-text">Loading...</div>
+                <div id="g3-options" style="display:grid; gap:10px;"></div>
+                
+                <div id="g3-feedback" class="feedback-popup"></div>
+                <button id="g3-next" class="next-btn" onclick="nextG3()">ลุยต่อ ➜</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if(tabId==='game1') initG1();
+            if(tabId==='game2') initG2();
+            if(tabId==='game3') initG3();
+        }
+
+        // --- GAME 1: Mind Analyzer Data ---
+        const g1Data = [
+            { q: "เล็งปืนไปที่ศีรษะของอริ แล้วลั่นไกทันที", a: "เจตนาประสงค์ต่อผล", type: "direct", explain: "มุ่งหมายให้เกิดความตายโดยตรง ชัดเจนที่สุด" },
+            { q: "ยิงปืนเข้าไปในห้องที่รู้ว่ามีคนอยู่ แต่ไม่เห็นตัวคน (กระสุนโดนคนตาย)", a: "เจตนาย่อมเล็งเห็นผล", type: "indirect", explain: "ไม่ได้มุ่งให้ตายโดยตรง แต่เล็งเห็นได้แน่นอนว่าถ้ายิงไปต้องโดนคน" },
+            { q: "ต้องการยิง ก. แต่กระสุนพลาดไปโดน ข. ที่ยืนข้างๆ", a: "เจตนาโดยผลของกฎหมาย", type: "transfer", explain: "ม.60 กระทำโดยพลาด กฎหมายให้ถือว่ามีเจตนาต่อผู้ถูกกระทำด้วย" },
+            { q: "เช็ดทำความสะอาดปืน แต่ลืมดูว่ามีลูกกระสุน ปืนลั่นใส่เพื่อนตาย", a: "ประมาท", type: "negligence", explain: "ไม่มีเจตนาฆ่า แต่ขาดความระมัดระวังตามวิสัยและพฤติการณ์" },
+            { q: "วางยาพิษในแท็งก์น้ำดื่มรวมของหมู่บ้าน", a: "เจตนาย่อมเล็งเห็นผล", type: "indirect", explain: "เล็งเห็นได้แน่นอนว่าใครมากินน้ำจะต้องตาย (ฎีกา 9805)" }
+        ];
+        
+        let g1Idx = 0;
+        function initG1() { g1Idx=0; loadG1(); }
+        function loadG1() {
+            if(g1Idx >= g1Data.length) { endG1(); return; }
+            const item = g1Data[g1Idx];
+            document.getElementById('g1-text').innerText = item.q;
+            const opts = document.getElementById('g1-options'); opts.innerHTML = "";
+            const choices = [
+                {t:"เจตนาประสงค์ต่อผล", k:"direct"}, {t:"เจตนาย่อมเล็งเห็นผล", k:"indirect"},
+                {t:"เจตนาโดยผลกฎหมาย (พลาด)", k:"transfer"}, {t:"ประมาท", k:"negligence"}
+            ];
+            choices.forEach(c => {
+                let btn = document.createElement('button'); btn.className = 'intent-btn'; btn.innerText = c.t;
+                btn.onclick = () => checkG1(c.k, item.type, item.explain);
+                opts.appendChild(btn);
+            });
+            resetFeedback('g1');
+        }
+        function checkG1(ans, correct, explain) {
+            const fb = document.getElementById('g1-feedback'); fb.style.display='block';
+            if(ans === correct) {
+                fb.className = 'feedback-popup correct'; fb.innerHTML = "✅ แม่นกฎหมายมาก! " + explain;
+            } else {
+                fb.className = 'feedback-popup wrong'; fb.innerHTML = "❌ ผิดครับ! ข้อนี้คือ " + explain;
+            }
+            disableBtns('g1-options');
+            document.getElementById('g1-next').style.display = 'block';
+        }
+        function nextG1() { g1Idx++; loadG1(); }
+        function endG1() { document.querySelector('#game1 .game-board').innerHTML = "<h2>🎉 วิเคราะห์ครบทุกเคสแล้ว!</h2><p>ท่านคือผู้เชี่ยวชาญด้านจิตใจอาชญากร</p><button class='next-btn' style='display:block' onclick='initG1()'>เล่นใหม่</button>"; }
+
+        // --- GAME 2: Special Intent Data ---
+        const g2Data = [
+            { q: "หยิบกระเป๋าเพื่อนไปโดยเข้าใจผิดคิดว่าเป็นของตนเอง ผิดลักทรัพย์หรือไม่?", opts:["ผิด (อ้างไม่ได้)", "ไม่ผิด (ขาดเจตนาทุจริต)"], c:1, r:"ลักทรัพย์ต้องมีเจตนาพิเศษ 'โดยทุจริต' เมื่อเข้าใจผิดจึงขาดเจตนานี้" },
+            { q: "ปลอมลายเซ็นเพื่อนลงในบิลอาหาร เพื่อให้เพื่อนเป็นคนจ่ายเงิน (เพื่อนยินดีจ่าย)", opts:["ผิดปลอมเอกสาร", "ไม่ผิดปลอมเอกสาร"], c:1, r:"ขาดเจตนาพิเศษ 'เพื่อให้ผู้หนึ่งผู้ใดหลงเชื่อ' (ทำไปเพื่อให้เพื่อนเลี้ยงข้าวเท่านั้น ฎีกา 1240/2504)" },
+            { q: "แอบนำรถเพื่อนไปใช้ขับเที่ยว แล้วนำมาคืนที่เดิม (แย่งการครอบครองชั่วคราว)", opts:["ผิดลักทรัพย์", "ไม่ผิดลักทรัพย์"], c:1, r:"ขาดเจตนาทุจริต (แสวงหาประโยชน์โดยมิชอบสำหรับตนเอง/ผู้อื่น) ในลักษณะตัดกรรมสิทธิ์" },
+            { q: "ความผิดฐาน 'ทำให้เสียทรัพย์' ต้องมีเจตนาพิเศษหรือไม่?", opts:["ต้องมี (เพื่อกลั่นแกล้ง)", "ไม่ต้องมี (เจตนาธรรมดาพอ)"], c:1, r:"ทำให้เสียทรัพย์ต้องการแค่เจตนาธรรมดา (ประสงค์/เล็งเห็น) ไม่ต้องการเจตนาพิเศษ" },
+            { q: "หากกฎหมายต้องการ 'เจตนาพิเศษ' แล้ว... เจตนาธรรมดาจะเป็น 'เล็งเห็นผล' ได้หรือไม่?", opts:["ได้", "ไม่ได้ (ต้องประสงค์ต่อผลเท่านั้น)"], c:1, r:"กฎเหล็ก! ถ้ามีเจตนาพิเศษ เจตนาธรรมดาต้องเป็น 'ประสงค์ต่อผล' เท่านั้น" }
+        ];
+        let g2Idx=0, g2Life=3;
+        function initG2() { g2Idx=0; g2Life=3; loadG2(); }
+        function loadG2() {
+            if(g2Life<=0) { document.querySelector('#game2 .game-board').innerHTML="<h2 style='color:red'>💀 Game Over</h2><p>กลับไปอ่านเรื่องเจตนาพิเศษใหม่นะครับ</p><button class='next-btn' style='display:block' onclick='initG2()'>เริ่มใหม่</button>"; return; }
+            if(g2Idx>=g2Data.length) { document.querySelector('#game2 .game-board').innerHTML="<h2 style='color:green'>🏆 Mission Complete</h2><p>คุณเข้าใจเรื่องเจตนาพิเศษอย่างลึกซึ้ง!</p>"; return; }
+            
+            document.getElementById('g2-life').innerText = "❤️".repeat(g2Life) + " Lives Left";
+            const item = g2Data[g2Idx];
+            document.getElementById('g2-text').innerText = item.q;
+            const opts = document.getElementById('g2-options'); opts.innerHTML="";
+            item.opts.forEach((o, i) => {
+                let btn = document.createElement('button'); btn.className='quiz-btn'; btn.innerText=o;
+                btn.onclick = () => checkG2(i, item.c, item.r);
+                opts.appendChild(btn);
+            });
+            resetFeedback('g2');
+        }
+        function checkG2(ans, corr, reason) {
+            const fb = document.getElementById('g2-feedback'); fb.style.display='block';
+            if(ans===corr) {
+                fb.className='feedback-popup correct'; fb.innerText="✅ ถูกต้อง! "+reason;
+            } else {
+                g2Life--;
+                fb.className='feedback-popup wrong'; fb.innerText="❌ ผิด! "+reason;
+            }
+            disableBtns('g2-options');
+            document.getElementById('g2-next').style.display='block';
+        }
+        function nextG2() { g2Idx++; loadG2(); }
+
+        // --- GAME 3: Dika Survivor Data ---
+        const g3Data = [
+            { q: "ฎีกาที่ 1104/2509: จำเลยทำร้ายผู้อื่นตายโดยไม่เจตนา (ม.290) ในทางแพ่งจำเลยอ้างว่า 'ไม่ได้จงใจ' ได้หรือไม่?", o:["ได้ (เพราะอาญาบอกไม่เจตนา)", "ไม่ได้ (เพราะแพ่งดูความรู้สำนึก)"], c:1, r:"ไม่ได้! ทางแพ่ง 'จงใจ' กว้างกว่าเจตนาอาญา เมื่อรู้สำนึกว่าจะทำร้าย ย่อมถือว่าจงใจทำละเมิด" },
+            { q: "ฎีกาที่ 9805/25xx: การยิงปืนเข้าไปในกลุ่มคนโดยไม่เล็งใครเป็นพิเศษ ถือเป็นเจตนาชนิดใด?", o:["ประสงค์ต่อผล", "ย่อมเล็งเห็นผล", "ประมาท"], c:1, r:"ย่อมเล็งเห็นผล! เพราะเล็งเห็นได้แน่นอนว่าต้องมีคนโดนลูกหลง" },
+            { q: "เทียบฎีกา 1240/2504: ปลอมเอกสารเพื่อให้เพื่อนเลี้ยงข้าว ผิดฐานปลอมเอกสารหรือไม่?", o:["ผิด", "ไม่ผิด"], c:1, r:"ไม่ผิด! เพราะขาดเจตนาพิเศษ 'เพื่อให้ผู้หนึ่งผู้ใดหลงเชื่อ' (ทำเพื่อกินฟรี ไม่ใช่เพื่อหลอกเรื่องเอกสาร)" },
+            { q: "ขับรถเร็วกว่ากำหนด ชนคนตาย เป็นเจตนาฆ่า (เล็งเห็นผล) หรือ ประมาท?", o:["เจตนาฆ่า", "ประมาท"], c:1, r:"เป็นประมาท เพราะไม่ได้ประสงค์จะชน และไม่แน่ใจว่าจะชนหรือไม่ (แค่ 'อาจจะ' ไม่ใช่ 'แน่นอน')" },
+            { q: "แกล้งเอาปืนไม่มีลูกจ่อหัวเพื่อน แล้วเหนี่ยวไก เพื่อนตกใจช็อกตาย ผิดฐานใด?", o:["เจตนาฆ่า", "ประมาท", "ฆ่าคนตายโดยไม่เจตนา (ม.290)", "ไม่มีความผิดฐานฆ่า"], c:2, r:"มีเจตนาทำร้าย (ข่มขู่) ผลคือตาย = ฆ่าคนตายโดยไม่เจตนา (เทียบเคียงหลัก)" } // *Modified for quiz flow, simplifed law logic for game
+        ];
+        let g3Idx=0;
+        function initG3() { g3Idx=0; loadG3(); }
+        function loadG3() {
+            if(g3Idx>=g3Data.length) { document.querySelector('#game3 .game-board').innerHTML="<h2 style='color:green'>🎖️ รอดชีวิต!</h2><p>คุณคือสุดยอดนักกฎหมายตัวจริง</p><button class='next-btn' style='display:block' onclick='initG3()'>เล่นใหม่</button>"; return; }
+            
+            document.getElementById('g3-progress').style.width = (g3Idx/g3Data.length*100) + "%";
+            const item = g3Data[g3Idx];
+            document.getElementById('g3-text').innerText = "คดีที่ "+(g3Idx+1)+": "+item.q;
+            const opts = document.getElementById('g3-options'); opts.innerHTML="";
+            item.o.forEach((o, i) => {
+                let btn = document.createElement('button'); btn.className='quiz-btn'; btn.innerText=o;
+                btn.onclick = () => checkG3(i, item.c, item.r);
+                opts.appendChild(btn);
+            });
+            resetFeedback('g3');
+        }
+        function checkG3(ans, corr, reason) {
+            const fb = document.getElementById('g3-feedback'); fb.style.display='block';
+            if(ans===corr) {
+                fb.className='feedback-popup correct'; fb.innerText="✅ รอดตัวไป! "+reason;
+                disableBtns('g3-options');
+                document.getElementById('g3-next').style.display='block';
+            } else {
+                fb.className='feedback-popup wrong'; fb.innerHTML="❌ ตกม้าตาย! "+reason+"<br>(เริ่มใหม่ทั้งหมด)";
+                document.getElementById('g3-next').innerText = "เริ่มใหม่ 😭";
+                document.getElementById('g3-next').style.display='block';
+                document.getElementById('g3-next').onclick = initG3;
+            }
+        }
+        function nextG3() { g3Idx++; loadG3(); }
+
+        // --- Utilities ---
+        function resetFeedback(id) {
+            document.getElementById(id+'-feedback').style.display='none';
+            document.getElementById(id+'-next').style.display='none';
+        }
+        function disableBtns(id) {
+            const btns = document.getElementById(id).getElementsByTagName('button');
+            for(let b of btns) b.disabled=true;
+        }
+
+    </script>
+</body>
+</html>
