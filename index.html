@@ -4,44 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Law Game - ณัฐพล บัวทอง</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap');
-        
-        :root {
-            --sat: env(safe-area-inset-top);
-            --sab: env(safe-area-inset-bottom);
-        }
-
-        body { 
-            font-family: 'Sarabun', sans-serif; 
-            background-color: #f3f4f6; 
-            -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
-            overscroll-behavior-y: contain; /* ป้องกัน Pull-to-refresh บน iOS/Android */
-            height: 100dvh; /* Dynamic Viewport Height */
-        }
-
-        .safe-pb { padding-bottom: var(--sab); }
-        .safe-pt { padding-top: var(--sat); }
-
-        /* Custom Scrollbar สำหรับ Windows/macOS */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col">
-    <div id="root" class="flex-1 flex flex-col overflow-hidden"></div>
+<body class="bg-gray-100 h-screen flex flex-col overflow-hidden">
+
+    <div id="root" class="flex-1 flex flex-col h-full"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
-        const { Trophy, ArrowLeft, Gavel, ChevronRight, Search, BookOpen } = lucide;
+        const { useState } = React;
 
+        // --- ส่วนสร้างไอคอนเอง (ไม่ต้องพึ่งเว็บนอก กันเว็บพัง) ---
+        const IconGavel = ({size=24, className=""}) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></svg>
+        );
+        const IconTrophy = ({size=24, className=""}) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        );
+        const IconArrowLeft = ({size=24, className=""}) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        );
+        const IconChevronRight = ({size=24, className=""}) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>
+        );
+
+        // --- ส่วนข้อมูลเกม ---
         const gamesDatabase = [
             {
                 id: "crim-001",
@@ -74,6 +69,7 @@
             }
         ];
 
+        // --- ส่วนระบบเกม ---
         const GameEngine = ({ gameData, onBack }) => {
             const [currentQ, setCurrentQ] = useState(0);
             const [score, setScore] = useState(0);
@@ -95,49 +91,42 @@
             };
 
             if (finished) return (
-                <div className="flex flex-col items-center justify-center h-full p-8 bg-white text-center safe-pb">
-                    <Trophy size={80} className="text-yellow-500 mb-6 animate-bounce" />
+                <div className="flex flex-col items-center justify-center h-full p-8 bg-white text-center animate-fade-in">
+                    <div className="mb-6"><IconTrophy size={80} className="text-yellow-500 animate-bounce" /></div>
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">จบคดีความ!</h2>
                     <p className="text-xl text-gray-600 mb-8">คุณทำได้ {score} / {gameData.quizzes.length} คะแนน</p>
-                    <button onClick={onBack} className="bg-indigo-600 text-white px-10 py-4 rounded-full font-bold shadow-lg active:scale-95 transition-transform">กลับหน้าหลัก</button>
+                    <button onClick={onBack} className="bg-indigo-600 text-white px-10 py-4 rounded-full font-bold shadow-lg">กลับหน้าหลัก</button>
                 </div>
             );
 
             const quiz = gameData.quizzes[currentQ];
 
             return (
-                <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
-                    <div className="bg-white p-4 pt-10 shadow-sm flex items-center gap-3 sticky top-0 z-10 safe-pt">
-                        <button onClick={onBack} className="p-2 bg-gray-100 rounded-full active:bg-gray-200"><ArrowLeft size={20}/></button>
+                <div className="flex flex-col h-full bg-gray-50">
+                    <div className="bg-white p-4 shadow-sm flex items-center gap-3 sticky top-0 z-10">
+                        <button onClick={onBack} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"><IconArrowLeft size={20}/></button>
                         <div>
-                            <h2 className="font-bold text-gray-800 leading-tight">{gameData.title}</h2>
+                            <h2 className="font-bold text-gray-800">{gameData.title}</h2>
                             <p className="text-xs text-gray-500">ข้อที่ {currentQ + 1}/{gameData.quizzes.length}</p>
                         </div>
                     </div>
-                    
-                    <div className="flex-1 overflow-y-auto p-6 pb-24">
+                    <div className="p-6 overflow-y-auto pb-24">
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                            <p className="text-lg font-medium text-gray-800 leading-relaxed">{quiz.question}</p>
+                            <p className="text-lg font-medium text-gray-800">{quiz.question}</p>
                         </div>
-
                         {!showAns ? (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {quiz.options.map((opt, i) => (
-                                    <button key={i} onClick={() => handleAnswer(opt.correct)} 
-                                        className="w-full text-left p-5 rounded-xl border-2 border-transparent bg-white shadow-sm hover:border-indigo-200 active:bg-indigo-50 transition-all font-medium text-gray-700">
+                                    <button key={i} onClick={() => handleAnswer(opt.correct)} className="w-full text-left p-4 rounded-xl border bg-white shadow-sm hover:bg-indigo-50 font-medium text-gray-700 active:scale-95 transition-transform">
                                         {opt.text}
                                     </button>
                                 ))}
                             </div>
                         ) : (
-                            <div className="p-6 rounded-2xl border-2 border-green-200 bg-green-50 animate-fadeIn">
-                                <div className="font-bold text-green-800 mb-3 flex items-center gap-2">
-                                    <Gavel size={20}/> คำตัดสิน:
-                                </div>
-                                <p className="text-gray-700 mb-6 leading-relaxed">{quiz.options.find(o=>o.correct).reason}</p>
-                                <button onClick={next} className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold shadow-lg active:scale-[0.98] transition-all">
-                                    {currentQ < gameData.quizzes.length - 1 ? "ไปต่อ ➡️" : "ดูผลลัพธ์"}
-                                </button>
+                            <div className={`p-5 rounded-xl border ${quiz.options.find(o=>o.correct).text ? 'bg-green-50 border-green-200' : ''}`}>
+                                <div className="font-bold text-green-800 mb-2 flex items-center gap-2"><IconGavel size={18}/> คำตัดสิน:</div>
+                                <p className="text-gray-700 mb-4">{quiz.options.find(o=>o.correct).reason}</p>
+                                <button onClick={next} className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold">ไปต่อ ➡️</button>
                             </div>
                         )}
                     </div>
@@ -148,43 +137,37 @@
         const App = () => {
             const [selectedGame, setSelectedGame] = useState(null);
             
-            return (
-                <div className="flex flex-col h-full">
-                    {selectedGame ? (
-                        <GameEngine gameData={selectedGame} onBack={() => setSelectedGame(null)} />
-                    ) : (
-                        <div className="flex flex-col h-full bg-gray-50">
-                            <div className="bg-indigo-900 text-white p-8 pt-14 rounded-b-[40px] shadow-xl relative overflow-hidden safe-pt">
-                                <div className="relative z-10">
-                                    <span className="bg-indigo-500/30 text-indigo-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-widest">Law Learning</span>
-                                    <h1 className="text-4xl font-extrabold mt-3 mb-1">Law Game</h1>
-                                    <p className="text-indigo-200 text-sm opacity-80">โดย ณัฐพล บัวทอง</p>
-                                </div>
-                                <Gavel className="absolute right-[-20px] bottom-[-20px] text-white opacity-10 rotate-12" size={180} />
-                            </div>
+            if (selectedGame) return <GameEngine gameData={selectedGame} onBack={() => setSelectedGame(null)} />;
 
-                            <div className="flex-1 p-6 overflow-y-auto">
-                                <h2 className="text-gray-400 font-bold text-xs mb-4 uppercase tracking-wider flex items-center gap-2">
-                                    <BookOpen size={14}/> คดีที่พร้อมให้เล่น ({gamesDatabase.length})
-                                </h2>
-                                <div className="space-y-4 pb-10">
-                                    {gamesDatabase.map(game => (
-                                        <button key={game.id} onClick={() => setSelectedGame(game)} 
-                                            className="w-full bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all active:scale-[0.97] text-left group">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-2xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-all">⚖️</div>
-                                                <div>
-                                                    <h3 className="font-bold text-gray-800 text-lg">{game.title}</h3>
-                                                    <p className="text-sm text-gray-400 line-clamp-1">{game.description}</p>
-                                                </div>
-                                            </div>
-                                            <ChevronRight className="text-gray-300 group-hover:text-indigo-600 transition-colors" />
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+            return (
+                <div className="flex flex-col h-screen bg-gray-50">
+                    <div className="bg-indigo-900 text-white p-8 rounded-b-3xl shadow-lg relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h1 className="text-3xl font-extrabold mb-1">Law Game</h1>
+                            <p className="text-indigo-200 text-sm">โดย ณัฐพล บัวทอง</p>
                         </div>
-                    )}
+                        <div className="absolute right-[-10px] top-[20px] text-indigo-800 opacity-50">
+                            <IconGavel size={120} />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 p-6 overflow-y-auto">
+                        <h2 className="text-gray-500 font-bold text-sm mb-4 uppercase tracking-wide">คดีที่พร้อมให้เล่น ({gamesDatabase.length})</h2>
+                        <div className="space-y-4">
+                            {gamesDatabase.map(game => (
+                                <button key={game.id} onClick={() => setSelectedGame(game)} className="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all active:scale-95 text-left group">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl shadow-inner group-hover:scale-110 transition-transform">⚖️</div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-800 text-lg">{game.title}</h3>
+                                            <p className="text-xs text-gray-500">{game.description}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-gray-300"><IconChevronRight /></div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             );
         };
