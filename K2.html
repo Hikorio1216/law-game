@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law Pro: องค์ประกอบภายนอก</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* ธีมเขียว-ส้ม ตามสั่ง */
+            --bg-color: #064e3b; /* เขียวแก่จัด (Background) */
+            --card-bg: #065f46;  /* เขียวรอง */
+            --text-main: #ecfdf5; /* ขาวอมเขียว */
+            --accent: #f59e0b;   /* ส้มทอง (Highlight) */
+            --accent-hover: #d97706;
+            --success: #10b981;  /* เขียวสว่าง */
+            --error: #ef4444;    /* แดง */
+            --border: #34d399;   /* เส้นขอบเขียวมิ้นท์ */
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        /* ปุ่มกลับหน้าหลัก */
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex; align-items: center; gap: 5px;
+            border: 1px solid var(--accent);
+        }
+        .back-btn:hover { background: var(--accent); color: black; }
+
+        .container { max-width: 900px; width: 100%; margin-top: 50px; }
+
+        h1 { text-align: center; color: var(--accent); font-weight: 800; font-size: 2.2rem; text-shadow: 2px 2px 0px #000; margin-bottom: 5px; }
+        .subtitle { text-align: center; opacity: 0.8; margin-bottom: 25px; font-size: 1rem; color: #a7f3d0; }
+
+        /* TABS Styling */
+        .tabs {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;
+            background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px;
+        }
+        .tab-btn {
+            border: 2px solid transparent; padding: 10px 15px; background: transparent;
+            color: var(--text-main); opacity: 0.7; cursor: pointer; border-radius: 10px;
+            font-family: 'Prompt', sans-serif; transition: 0.3s; font-weight: 600;
+        }
+        .tab-btn.active {
+            opacity: 1; background: var(--accent); color: #064e3b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); transform: scale(1.05);
+        }
+
+        /* SECTIONS */
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* STUDY CARD Styling */
+        .study-card {
+            background-color: rgba(6, 95, 70, 0.8);
+            border-radius: 15px; margin-bottom: 15px;
+            border: 1px solid var(--border); overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        details summary {
+            cursor: pointer; padding: 18px; background: rgba(0,0,0,0.2);
+            font-weight: 600; color: var(--accent); list-style: none;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        details summary:hover { background: rgba(0,0,0,0.4); }
+        details summary::after { content: '🔽'; transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+        
+        .study-content { padding: 25px; font-size: 1rem; color: #ecfdf5; }
+        .highlight { color: var(--accent); font-weight: bold; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+        
+        /* ฎีกา Box Styling */
+        .dika-box {
+            background: #022c22; border-left: 5px solid var(--accent);
+            padding: 15px; margin: 15px 0; border-radius: 0 10px 10px 0;
+            font-style: italic; color: #d1fae5; position: relative;
+        }
+        .dika-ref {
+            display: block; text-align: right; font-size: 0.85rem;
+            color: var(--accent); margin-top: 8px; font-weight: 800;
+        }
+
+        /* GAME AREA */
+        .game-area {
+            background: rgba(0, 0, 0, 0.2); padding: 25px; border-radius: 20px;
+            border: 2px solid var(--accent); position: relative; min-height: 400px;
+        }
+        .score-badge {
+            position: absolute; top: -15px; right: 20px; background: var(--accent);
+            color: #064e3b; padding: 5px 15px; border-radius: 20px; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid #fff;
+        }
+
+        /* Buttons & Interactions */
+        .quiz-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid var(--border);
+            color: white; padding: 15px; width: 100%; margin-bottom: 10px;
+            cursor: pointer; border-radius: 12px; text-align: left; transition: 0.2s;
+            font-size: 1rem;
+        }
+        .quiz-btn:hover:not(:disabled) { background: var(--success); border-color: white; color: #064e3b; font-weight: bold; }
+        
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold; }
+        .feedback.correct { background: #d1fae5; color: #065f46; border: 2px solid var(--success); }
+        .feedback.wrong { background: #fee2e2; color: #991b1b; border: 2px solid var(--error); }
+
+        .next-btn {
+            background: var(--accent); color: #064e3b; border: none; padding: 12px;
+            border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;
+            margin-top: 15px; display: none; font-size: 1.1rem;
+            box-shadow: 0 4px 0 #b45309; transition: transform 0.1s;
+        }
+        .next-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        /* Matching Game Grid */
+        .grid-match { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .match-card {
+            background: #064e3b; border: 2px solid var(--border); padding: 10px;
+            border-radius: 10px; cursor: pointer; text-align: center;
+            display: flex; align-items: center; justify-content: center; min-height: 60px;
+            font-size: 0.9rem; transition: 0.2s;
+        }
+        .match-card.selected { background: var(--accent); color: #064e3b; border-color: white; }
+        .match-card.matched { background: var(--success); opacity: 0.2; pointer-events: none; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">
+        ⬅️ กลับหน้าหลัก
+    </a>
+
+    <div class="container">
+        <h1>Criminal Law Pro</h1>
+        <div class="subtitle">บทที่ 2: องค์ประกอบภายนอก (External Elements)</div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('study')">📖 ติวเข้มเนื้อหา</button>
+            <button class="tab-btn" onclick="switchTab('game1')">🧩 จับคู่ (10 คู่)</button>
+            <button class="tab-btn" onclick="switchTab('game2')">⚖️ วินิจฉัย (10 ข้อ)</button>
+            <button class="tab-btn" onclick="switchTab('game3')">❌✅ ถูกหรือผิด</button>
+            <button class="tab-btn" onclick="switchTab('game4')">🕵️ สืบสวนคดี</button>
+        </div>
+
+        <div id="study" class="section active">
+            
+            <div class="study-card">
+                <details open>
+                    <summary>1. ผู้กระทำ (The Actor)</summary>
+                    <div class="study-content">
+                        <p>ผู้กระทำความผิด อาจเป็นบุคคลธรรมดา หรือ <span class="highlight">นิติบุคคล</span> (ฎีกา 3446/2537 นิติบุคคลประมาทได้) แบ่งได้ดังนี้:</p>
+                        <ul>
+                            <li><strong>(ก) ผู้กระทำผิดเอง:</strong> ลงมือเอง หรือใช้สัตว์/วัตถุ หรือใช้คนไม่มีการกระทำ (เช่น สะกดจิต/จับมือเซ็น)</li>
+                            <li><strong>(ข) ผู้กระทำผิดเองโดยอ้อม (Indirect Perpetrator):</strong> ใช้คนที่มีการกระทำเป็นเครื่องมือ แต่เขา <span class="highlight">ไม่รู้ข้อเท็จจริง (Innocent Agent)</span>
+                                <div class="dika-box">
+                                    "แดงหลอกพยาบาลขาวว่ายาพิษคือยาบำรุง ขาวป้อนคนไข้ตาย = แดงเป็นผู้กระทำผิดเองโดยอ้อม (ฆ่าคนตาย) ส่วนขาวขาดเจตนา (ม.59 ว.3) แต่อาจผิดประมาท"
+                                    <span class="dika-ref">(อ.เกียรติขจร)</span>
+                                </div>
+                                <div class="dika-box">
+                                    "สั่งลูกน้องเผาเอกสารโดยลูกน้องไม่รู้ว่าเป็นเอกสารสำคัญ = นายจ้างผิด ม.188 ตนเอง"
+                                    <span class="dika-ref">(ฎีกาที่ 3336-3337/2547)</span>
+                                </div>
+                            </li>
+                            <li><strong>(ค) ผู้ร่วมกระทำความผิด:</strong> ตัวการ, ผู้ใช้, ผู้สนับสนุน</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>2. การกระทำ (The Act) - ขั้นลงมือ</summary>
+                    <div class="study-content">
+                        <p>ต้องถึงขั้น <strong>"ลงมือ"</strong> ตามองค์ประกอบความผิดนั้นๆ หากอยู่แค่ขั้นตระเตรียม ยังไม่ถือว่ามีความผิด (เว้นแต่กฎหมายบัญญัติไว้เฉพาะ เช่น ตระเตรียมวางเพลิง)</p>
+                        <p><span class="highlight">ตัวอย่าง:</span> ซื้อปืนเถื่อนมาดักรอฆ่า ขัดปืนรอแล้วรออีก = ยังไม่ได้ลงมือฆ่า (ยังไม่มีการกระทำฐานฆ่า)</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>3. วัตถุแห่งการกระทำ (The Object)</summary>
+                    <div class="study-content">
+                        <p>คือสิ่งที่ผู้กระทำมุ่งหมายกระทำต่อ ถ้าขาดสิ่งนี้ = <strong>ขาดองค์ประกอบภายนอก</strong> (ไม่ผิดฐานนั้นๆ แม้พยายามก็ไม่ผิดตาม ม.81)</p>
+                        <ul>
+                            <li><strong>ฐานฆ่าคน (ม.288):</strong> วัตถุคือ "ผู้อื่น" (คนมีชีวิต) -> ยิงศพ = ไม่ผิดฐานฆ่า/พยายามฆ่า <span class="dika-ref">(ฎีกา 668-669/2521)</span></li>
+                            <li><strong>ฐานลักทรัพย์ (ม.334):</strong> วัตถุคือ "ทรัพย์" (วัตถุมีรูปร่าง) -> ขโมยข้อมูล/โอนหุ้น = ไม่ผิดลักทรัพย์</li>
+                            <li><strong>ฐานยักยอก (ม.352):</strong> วัตถุคือ "ทรัพย์" (รวมอสังหาฯ ได้ เช่น ยักยอกบ้าน) แต่หุ้นยักยอกไม่ได้ <span class="dika-ref">(ฎีกา 1308/2558)</span></li>
+                            <li><strong>ฐานฉ้อโกง (ม.341):</strong> วัตถุคือ "ทรัพย์สิน" (รวมสิทธิ/ของไม่มีรูปร่าง) -> หลอกเอาหุ้น = ผิดฉ้อโกง</li>
+                        </ul>
+                        <div class="dika-box">
+                            "ผ่าตัดเอาไตจากร่างกายผู้สมองตาย (ตายแล้ว) = ไม่ผิดฐานฆ่าผู้อื่น เพราะไม่มีสภาพบุคคลให้ฆ่า"
+                            <span class="dika-ref">(ฎีกาที่ 4200/2559)</span>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>4. พฤติการณ์ประกอบการกระทำ</summary>
+                    <div class="study-content">
+                        <p>องค์ประกอบพิเศษ เช่น "น่าจะเกิดความเสียหาย", "โดยทุจริต", "อันเป็นการเหยียดหยามศาสนา"</p>
+                        <p><span class="highlight">หลักสำคัญ:</span> ไม่ต้องเกิดผลจริง แค่ <strong>"วิญญูชนเห็นว่าน่าจะเกิด"</strong> ก็ผิดแล้ว (เช่น ทอดทิ้งคนแก่ ม.307 แค่น่าจะเป็นอันตรายก็ผิดเลย)</p>
+                    </div>
+                </details>
+            </div>
+
+        </div>
+
+        <div id="game1" class="section">
+            <div class="game-area">
+                <div class="score-badge">คู่ที่ <span id="m-round">1</span>/5</div>
+                <h2 style="text-align:center; color:var(--text-main);">🧩 จับคู่หลักกฎหมาย</h2>
+                <p style="text-align:center; font-size:0.9rem; color:#a7f3d0;">จับคู่สิ่งที่เป็น "คู่" กันให้ถูกต้อง</p>
+                <br>
+                <div class="grid-match" id="match-area"></div>
+                <div id="m-feedback" class="feedback"></div>
+                <button id="m-next" class="next-btn" onclick="nextMatchBatch()">ชุดถัดไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game2" class="section">
+            <div class="game-area">
+                <div class="score-badge">คะแนน: <span id="q-score">0</span></div>
+                <h2 style="text-align:center; color:var(--text-main);">⚖️ วินิจฉัยข้อกฎหมาย</h2>
+                <div id="quiz-container">
+                    <div class="study-card" style="padding:20px; border:2px solid var(--accent);">
+                        <p id="q-text" style="font-size:1.1rem; font-weight:bold;">Loading...</p>
+                    </div>
+                    <div id="q-options"></div>
+                </div>
+                <div id="q-feedback" class="feedback"></div>
+                <button id="q-next" class="next-btn" onclick="nextQuiz()">ข้อต่อไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game3" class="section">
+            <div class="game-area" style="text-align:center;">
+                <div class="score-badge">ข้อที่ <span id="tf-current">1</span>/10</div>
+                <h2>❌✅ ใช่ หรือ ไม่ใช่</h2>
+                <div class="study-card" style="padding:30px; margin:30px 0; background:rgba(0,0,0,0.3);">
+                    <h3 id="tf-text" style="font-size:1.3rem; color:var(--accent);">Loading...</h3>
+                </div>
+                <div style="display:flex; gap:20px; justify-content:center;">
+                    <button class="quiz-btn" style="background:#ef4444; border:none; font-size:1.5rem;" onclick="checkTF(false)">❌ ไม่ใช่</button>
+                    <button class="quiz-btn" style="background:#10b981; border:none; font-size:1.5rem;" onclick="checkTF(true)">✅ ใช่</button>
+                </div>
+                <div id="tf-feedback" class="feedback"></div>
+                <button id="tf-next" class="next-btn" onclick="nextTF()">ข้อต่อไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game4" class="section">
+            <div class="game-area">
+                <div class="score-badge">Case <span id="d-case">1</span></div>
+                <h2>🕵️ สืบสวนคดีปริศนา</h2>
+                <div id="d-story" class="study-card" style="padding:20px; background:rgba(0,0,0,0.4);"></div>
+                <div id="d-question" style="font-weight:bold; color:var(--accent); margin:15px 0;"></div>
+                <div id="d-options"></div>
+                <div id="d-feedback" class="feedback"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Navigation Logic ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Init Games
+            if(tabId === 'game1') initMatching();
+            if(tabId === 'game2') initQuiz();
+            if(tabId === 'game3') initTF();
+            if(tabId === 'game4') initDetective();
+        }
+
+        /* ================= DATA: GAME 1 (MATCHING) ================= */
+        const matchData = [
+            { L: "ลักทรัพย์ (ม.334)", R: "วัตถุคือ 'ทรัพย์' (มีรูปร่าง)" },
+            { L: "ฉ้อโกง (ม.341)", R: "วัตถุคือ 'ทรัพย์สิน' (รวมไม่มีรูปร่าง)" },
+            { L: "หลอกพยาบาลให้ฉีดยาพิษ", R: "ผู้กระทำผิดเองโดยอ้อม" },
+            { L: "พยาบาลไม่รู้ว่าเป็นยาพิษ", R: "Innocent Agent (เครื่องมือ)" },
+            { L: "ยิงศพ (ตายมาก่อนแล้ว)", R: "ขาดองค์ประกอบ (วัตถุ)" },
+            { L: "ผ่าไตจากคนสมองตาย", R: "ไม่ผิดฐานฆ่าคน (ฎีกา 4200/2559)" },
+            { L: "โอนหุ้น (ลักทรัพย์ไม่ได้)", R: "เพราะหุ้นไม่ใช่ 'ทรัพย์'" },
+            { L: "ขัดปืนรอฆ่า", R: "ยังไม่ถึงขั้น 'ลงมือ'" },
+            { L: "นิติบุคคล", R: "กระทำผิดฐานหมิ่นประมาทได้" },
+            { L: "พฤติการณ์ประกอบการกระทำ", R: "น่าจะเกิดความเสียหาย" }
+        ];
+
+        /* ================= DATA: GAME 2 (QUIZ 10 ข้อ) ================= */
+        const quizData = [
+            { q: "นาย ก. ใช้เด็กปัญญาอ่อน (ไม่รู้เรื่อง) ไปหยิบปืนมายิงคนตาย นาย ก. มีความผิดฐานใด?", opts: ["ผู้ใช้", "ตัวการ", "ผู้กระทำผิดเองโดยอ้อม", "ผู้สนับสนุน"], c: 2, r: "เด็กเปรียบเสมือนเครื่องมือที่ไม่มีการกระทำ ก. จึงเป็นผู้กระทำผิดเองโดยอ้อม" },
+            { q: "วัตถุแห่งการกระทำในความผิดฐาน 'ลักทรัพย์' ต้องเป็นสิ่งใด?", opts: ["ทรัพย์สิน", "ทรัพย์ (วัตถุมีรูปร่าง)", "อสังหาริมทรัพย์", "ข้อมูลคอมพิวเตอร์"], c: 1, r: "ลักทรัพย์ต้องเป็น 'ทรัพย์' ที่เคลื่อนที่ได้และมีรูปร่างเท่านั้น (ข้อมูล/หุ้น ไม่ใช่ทรัพย์)" },
+            { q: "ฎีกาที่ 9556/2558 จำเลยมอบอำนาจให้ทนายไปแจ้งความเท็จ โดยทนายไม่รู้เรื่อง จำเลยผิดฐานใด?", opts: ["ผู้ใช้ให้กระทำผิด", "ผู้กระทำผิดเองโดยอ้อม", "ตัวการร่วม", "ไม่มีความผิด"], c: 1, r: "ทนายเป็น Innocent Agent จำเลยจึงเป็นผู้กระทำผิดเองโดยอ้อม (แจ้งความเท็จ)" },
+            { q: "ข้อใด 'นิติบุคคล' สามารถกระทำความผิดได้?", opts: ["ข่มขืนกระทำชำเรา", "ฆ่าผู้อื่นโดยเจตนา", "หมิ่นประมาท", "ทำร้ายร่างกาย"], c: 2, r: "นิติบุคคลไม่มีร่างกาย แต่สามารถหมิ่นประมาท/ฉ้อโกงได้ผ่านผู้แทน" },
+            { q: "แดงยิงดำที่นอนอยู่ โดยไม่รู้ว่าดำหัวใจวายตายไปก่อนหน้านั้น 2 ชั่วโมง แดงผิดฐานใด?", opts: ["ฆ่าผู้อื่นโดยเจตนา", "พยายามฆ่าผู้อื่น", "ประมาททำให้ตาย", "ไม่ผิดฐานฆ่า (ขาดองค์ประกอบ)"], c: 3, r: "ขาดวัตถุแห่งการกระทำ (คนมีชีวิต) จึงไม่ผิดฐานฆ่า หรือพยายามฆ่า (ม.81 ก็ไม่ผิด)" },
+            { q: "การ 'แอบโอนหุ้น' ของผู้อื่นมาเป็นของตน ผิดฐานลักทรัพย์หรือไม่?", opts: ["ผิด เพราะหุ้นมีมูลค่า", "ไม่ผิด เพราะหุ้นไม่ใช่ 'ทรัพย์' (ไม่มีรูปร่าง)", "ผิด เพราะหุ้นเป็นเอกสารสิทธิ์", "ผิดฐานยักยอก"], c: 1, r: "หุ้นเป็นเพียงสิทธิ (ทรัพย์สิน) ไม่มีรูปร่าง จึงผิดลักทรัพย์/ยักยอกไม่ได้ (แต่อาจผิดฉ้อโกง/พ.ร.บ.คอมฯ)" },
+            { q: "ความผิดฐานทอดทิ้งคนชรา (ม.307) ต้องรอให้คนชราบาดเจ็บก่อนหรือไม่?", opts: ["ต้องบาดเจ็บก่อน", "ต้องตายก่อน", "ไม่ต้อง แค่ 'น่าจะ' เกิดอันตรายก็ผิดแล้ว", "ต้องมีการร้องทุกข์"], c: 2, r: "เป็นพฤติการณ์ประกอบการกระทำ พิจารณาตามวิญญูชนว่า 'น่าจะ' เกิดเหตุ ก็ผิดทันที" },
+            { q: "กรณี Innocent Agent (พยาบาลไม่รู้ว่าเป็นยาพิษ) พยาบาลมีความผิดหรือไม่?", opts: ["ผิดฐานฆ่าคนตาย", "ผิดฐานพยายามฆ่า", "ไม่ผิดเจตนาฆ่า แต่อาจผิดประมาท", "รับโทษกึ่งหนึ่ง"], c: 2, r: "พยาบาลขาดเจตนา (ไม่รู้ข้อเท็จจริง) แต่ถ้าระวังไม่ดีอาจผิดประมาท ม.291" },
+            { q: "ฎีกาที่ 1308/2558 วินิจฉัยเรื่อง 'หุ้น' ไว้อย่างไร?", opts: ["หุ้นเป็นทรัพย์ ยักยอกได้", "หุ้นไม่ใช่ทรัพย์ ยักยอกไม่ได้", "หุ้นเป็นอสังหาริมทรัพย์", "หุ้นลักทรัพย์ได้"], c: 1, r: "ยักยอก (ม.352) วัตถุต้องเป็น 'ทรัพย์' หุ้นไม่มีรูปร่าง จึงยักยอกไม่ได้" },
+            { q: "ข้อใดถือเป็น 'การกระทำ' ในขั้นลงมือแล้ว?", opts: ["ซื้อปืน", "เดินดูลาดเลา", "จ้างมือปืน", "เหนี่ยวไกปืนแต่กระสุนด้าน"], c: 3, r: "เหนี่ยวไกคือการลงมือฆ่าแล้ว (แต่ไม่สำเร็จเป็นพยายาม) ข้ออื่นเป็นแค่ตระเตรียม" }
+        ];
+
+        /* ================= DATA: GAME 3 (TRUE/FALSE) ================= */
+        const tfData = [
+            { q: "การแอบคัดลอกข้อมูลในคอมพิวเตอร์ ถือเป็นความผิดฐาน 'ลักทรัพย์'?", a: false, r: "ข้อมูลไม่มีรูปร่าง ไม่ใช่ 'ทรัพย์' ตามประมวลกฎหมายอาญา" },
+            { q: "นิติบุคคล สามารถกระทำความผิดฐาน 'ประมาทเป็นเหตุให้ผู้อื่นถึงแก่ความตาย' ได้?", a: true, r: "ฎีกา 3446/2537 วินิจฉัยว่านิติบุคคลกระทำประมาทได้" },
+            { q: "การยิงคนที่ตายไปแล้ว ถือเป็นความผิดฐาน 'พยายามฆ่า' (ม.81)?", a: false, r: "ขาดองค์ประกอบภายนอก (วัตถุ) ไม่เป็นความผิดเลย ไม่ใช่พยายาม" },
+            { q: "การกักขังหน่วงเหนี่ยว ต้องมีการสัมผัสเนื้อตัวร่างกายเท่านั้น?", a: false, r: "ไม่จำเป็น แค่ทำให้ปราศจากเสรีภาพ (เช่น ขังในห้อง) ก็ผิดแล้ว" },
+            { q: "นายจ้างสั่งลูกน้องให้ทำผิดโดยลูกน้องไม่รู้เรื่อง นายจ้างเป็น 'ผู้ใช้'?", a: false, r: "นายจ้างเป็น 'ผู้กระทำผิดเองโดยอ้อม' (ลูกน้องเป็นเครื่องมือ)" },
+            { q: "ทรัพย์สินที่ไม่มีรูปร่าง (เช่น สิทธิการเช่า) สามารถเป็นวัตถุแห่งการ 'โกงเจ้าหนี้' ได้?", a: true, r: "โกงเจ้าหนี้ (ม.350) ใช้คำว่า 'ทรัพย์' แต่ฎีกาตีความรวมถึง 'ทรัพย์สิน' ด้วย" },
+            { q: "การขัดปืน เตรียมลูกกระสุน ถือว่า 'ลงมือ' ฆ่าแล้ว?", a: false, r: "ยังเป็นแค่ขั้น 'ตระเตรียม' ยังไม่มีความผิดฐานฆ่า" },
+            { q: "หมอผ่าตัดเอาไตคนไข้ที่สมองตายแล้วไปปลูกถ่าย มีความผิดฐานฆ่าคนตาย?", a: false, r: "คนสมองตายถือว่าตายแล้ว ขาดสภาพบุคคล จึงฆ่าไม่ได้อีก" },
+            { q: "วัตถุแห่งการกระทำของฐาน 'ยักยอก' ต้องเป็นสังหาริมทรัพย์เท่านั้น?", a: false, r: "ยักยอกอสังหาริมทรัพย์ได้ (เช่น ยักยอกบ้าน/ที่ดิน) ฎีกา 268/2536" },
+            { q: "ความผิดฐานแจ้งความเท็จ ผู้กระทำผิดโดยอ้อม (หลอกให้คนอื่นไปแจ้ง) มีความผิด?", a: true, r: "ผิด ม.137 ฐานแจ้งความเท็จ (โดยอ้อม)" }
+        ];
+
+        /* ================= LOGIC: MATCHING ================= */
+        let mRound = 0; let mSelected = null; let mMatched = 0;
+        function initMatching() { mRound=0; nextMatchBatch(); }
+        function nextMatchBatch() {
+            if(mRound >= 2) { document.getElementById('match-area').innerHTML = "<h3 style='grid-column:span 2; text-align:center; color:white;'>🎉 สุดยอด! ครบทุกคู่แล้ว</h3>"; return; }
+            const batch = matchData.slice(mRound*5, (mRound+1)*5);
+            let lefts = batch.map((i,idx)=>({t:i.L, id:idx})).sort(()=>Math.random()-0.5);
+            let rights = batch.map((i,idx)=>({t:i.R, id:idx})).sort(()=>Math.random()-0.5);
+            
+            const area = document.getElementById('match-area'); area.innerHTML = "";
+            [lefts, rights].forEach(group => {
+                let div = document.createElement('div'); div.className='grid-col';
+                group.forEach(item => {
+                    let c = document.createElement('div'); c.className='match-card'; c.innerText=item.t;
+                    c.dataset.id = item.id; c.onclick = (e) => clickMatch(e.target, item.id);
+                    div.appendChild(c);
+                });
+                area.appendChild(div);
+            });
+            mMatched=0; mRound++;
+            document.getElementById('m-feedback').style.display='none';
+            document.getElementById('m-next').style.display='none';
+        }
+        function clickMatch(el, id) {
+            if(el.classList.contains('matched')) return;
+            if(!mSelected) { mSelected = {el, id}; el.classList.add('selected'); return; }
+            if(mSelected.el === el) { mSelected.el.classList.remove('selected'); mSelected=null; return; }
+            
+            if(mSelected.id === id) { // Correct
+                el.classList.add('matched'); mSelected.el.classList.add('matched');
+                mSelected = null; mMatched++;
+                if(mMatched===5) document.getElementById('m-next').style.display='block';
+            } else { // Wrong
+                el.style.background = 'var(--error)'; mSelected.el.style.background = 'var(--error)';
+                setTimeout(() => {
+                    el.style.background = '#064e3b'; mSelected.el.style.background = '#064e3b';
+                    mSelected.el.classList.remove('selected'); mSelected = null;
+                }, 500);
+            }
+        }
+
+        /* ================= LOGIC: QUIZ ================= */
+        let qIdx = 0; let qScore = 0;
+        function initQuiz() { qIdx=0; qScore=0; loadQuiz(); }
+        function loadQuiz() {
+            if(qIdx >= quizData.length) {
+                document.getElementById('quiz-container').innerHTML = `<h2 style='text-align:center'>จบการทดสอบ! คะแนน ${qScore}/10</h2>`;
+                document.getElementById('q-next').style.display='none'; return;
+            }
+            const q = quizData[qIdx];
+            document.getElementById('q-text').innerText = `ข้อ ${qIdx+1}: ${q.q}`;
+            const opts = document.getElementById('q-options'); opts.innerHTML = "";
+            q.opts.forEach((o, i) => {
+                let btn = document.createElement('button'); btn.className='quiz-btn'; btn.innerText=o;
+                btn.onclick = () => answerQuiz(i);
+                opts.appendChild(btn);
+            });
+            document.getElementById('q-feedback').style.display='none';
+            document.getElementById('q-next').style.display='none';
+        }
+        function answerQuiz(i) {
+            const q = quizData[qIdx];
+            const btns = document.querySelectorAll('.quiz-btn');
+            btns.forEach(b => b.disabled = true);
+            const fb = document.getElementById('q-feedback'); fb.style.display='block';
+            
+            if(i === q.c) {
+                qScore++; document.getElementById('q-score').innerText = qScore;
+                fb.className = 'feedback correct'; fb.innerHTML = "✅ ถูกต้อง: " + q.r;
+                btns[i].style.background = 'var(--success)';
+            } else {
+                fb.className = 'feedback wrong'; fb.innerHTML = "❌ ผิด: " + q.r;
+                btns[i].style.background = 'var(--error)'; btns[q.c].style.background = 'var(--success)';
+            }
+            document.getElementById('q-next').style.display='block';
+        }
+        function nextQuiz() { qIdx++; loadQuiz(); }
+
+        /* ================= LOGIC: TRUE/FALSE ================= */
+        let tfIdx = 0;
+        function initTF() { tfIdx=0; loadTF(); }
+        function loadTF() {
+            if(tfIdx >= tfData.length) { document.getElementById('game3').querySelector('.game-area').innerHTML="<h2 style='text-align:center'>เก่งมาก! ครบทุกข้อแล้ว</h2>"; return; }
+            document.getElementById('tf-current').innerText = tfIdx+1;
+            document.getElementById('tf-text').innerText = tfData[tfIdx].q;
+            document.getElementById('tf-feedback').style.display='none';
+            document.getElementById('tf-next').style.display='none';
+        }
+        function checkTF(ans) {
+            const d = tfData[tfIdx];
+            const fb = document.getElementById('tf-feedback'); fb.style.display='block';
+            if(ans === d.a) { fb.className='feedback correct'; fb.innerText = "✅ ถูกต้อง! " + d.r; }
+            else { fb.className='feedback wrong'; fb.innerText = "❌ ผิด! " + d.r; }
+            document.getElementById('tf-next').style.display='block';
+        }
+        function nextTF() { tfIdx++; loadTF(); }
+
+        /* ================= LOGIC: DETECTIVE ================= */
+        const cases = [
+            { title: "คดีนางพยาบาลมรณะ", story: "แดงแค้นดำมาก จึงเอายาพิษใส่ขวดบอกขาว (พยาบาล) ว่าเป็นยาบำรุง ขาวไม่รู้เรื่องจึงนำไปป้อนดำจนตาย", 
+              steps: [
+                  { q: "ใครคือ 'ผู้กระทำ' ที่ทำให้ดำตาย?", o: ["แดงคนเดียว", "ขาวคนเดียว", "ทั้งคู่"], a: 2, r: "ในทางกายภาพ ขาวเป็นคนป้อน แต่แดงเป็นคนบงการ" },
+                  { q: "นางพยาบาลขาว มีความผิดฐานฆ่าคนตายโดยเจตนาหรือไม่?", o: ["ผิด", "ไม่ผิด"], a: 1, r: "ถูกต้อง! ขาวเป็น Innocent Agent ขาดเจตนา (ไม่รู้ข้อเท็จจริง ม.59 ว.3)" },
+                  { q: "แดงมีความผิดฐานใด?", o: ["ผู้ใช้", "ผู้กระทำผิดเองโดยอ้อม"], a: 1, r: "ถูกต้อง! แดงใช้ขาวเป็นเครื่องมือ จึงถือเป็นผู้กระทำผิดเองโดยอ้อม ฐานฆ่าผู้อื่นโดยเจตนา" }
+              ] 
+            },
+            { title: "คดีชิงหุ้นมหาภัย", story: "โจรกระจอก แอบแฮกบัญชีเสี่ยใหญ่ โอนหุ้นมูลค่า 10 ล้านบาท เข้าบัญชีตัวเอง", 
+              steps: [
+                  { q: "วัตถุแห่งการกระทำในคดีนี้คืออะไร?", o: ["เงินสด", "หุ้น (ข้อมูลอิเล็กทรอนิกส์)"], a: 1, r: "ถูกต้อง คือหุ้นที่เป็นข้อมูล" },
+                  { q: "หุ้น ถือเป็น 'ทรัพย์' ตามกฎหมายอาญาหรือไม่?", o: ["เป็น", "ไม่เป็น"], a: 1, r: "ถูกต้อง หุ้นไม่มีรูปร่าง ไม่ใช่ทรัพย์" },
+                  { q: "โจรกระจอก ผิดฐาน 'ลักทรัพย์' หรือไม่?", o: ["ผิด", "ไม่ผิด"], a: 1, r: "ถูกต้อง! เมื่อขาดวัตถุ (ทรัพย์) จึงขาดองค์ประกอบภายนอก ไม่ผิดลักทรัพย์ (แต่ผิด พรบ.คอมฯ)" }
+              ] 
+            }
+        ];
+        let cIdx=0; let sIdx=0;
+        function initDetective() { cIdx=0; sIdx=0; loadCase(); }
+        function loadCase() {
+            if(cIdx >= cases.length) { document.getElementById('game4').querySelector('.game-area').innerHTML="<h2 style='text-align:center'>ปิดคดีครบถ้วน! ท่านคือยอดนักสืบ 🕵️‍♂️</h2>"; return; }
+            const c = cases[cIdx];
+            document.getElementById('d-case').innerText = cIdx+1;
+            document.getElementById('d-story').innerHTML = `<h3>${c.title}</h3><p>${c.story}</p>`;
+            loadCaseStep();
+        }
+        function loadCaseStep() {
+            const step = cases[cIdx].steps[sIdx];
+            document.getElementById('d-question').innerText = "คำถาม: " + step.q;
+            const opts = document.getElementById('d-options'); opts.innerHTML="";
+            step.o.forEach((o, i) => {
+                let btn = document.createElement('button'); btn.className='quiz-btn'; btn.innerText=o;
+                btn.onclick = () => checkCase(i);
+                opts.appendChild(btn);
+            });
+            document.getElementById('d-feedback').style.display='none';
+        }
+        function checkCase(i) {
+            const step = cases[cIdx].steps[sIdx];
+            const fb = document.getElementById('d-feedback'); fb.style.display='block';
+            if(i === step.a) {
+                fb.className='feedback correct'; fb.innerText = "✅ " + step.r;
+                setTimeout(() => {
+                    sIdx++;
+                    if(sIdx >= cases[cIdx].steps.length) { cIdx++; sIdx=0; loadCase(); }
+                    else { loadCaseStep(); }
+                }, 2000);
+            } else {
+                fb.className='feedback wrong'; fb.innerText = "❌ ผิด! ลองวิเคราะห์ใหม่";
+            }
+        }
+
+    </script>
+</body>
+</html>
