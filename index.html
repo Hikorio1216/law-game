@@ -6,241 +6,185 @@
     <title>Law Game - Nattapon Buathong</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap');
         
         body { 
             font-family: 'Prompt', sans-serif; 
-            background-color: #f8fafc; /* สีฟ้าจางๆ สไตล์มินิมอล */
+            background-color: #f8fafc;
             -webkit-tap-highlight-color: transparent; 
         }
-        
-        .animate-fade-in { 
-            animation: fadeIn 0.4s ease-out; 
-        }
-        
+
+        .page { display: none; animation: fadeIn 0.4s ease-out; }
+        .page.active { display: flex; }
+
         @keyframes fadeIn { 
             from { opacity: 0; transform: translateY(10px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* ตกแต่งปุ่มให้ดูแพง */
-        .btn-minimal {
-            transition: all 0.2s ease;
-            border: 1px solid #e2e8f0;
-        }
-        .btn-minimal:active {
-            transform: scale(0.98);
+        .law-card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center min-h-screen">
 
-    <div id="root"></div>
+    <div id="app-container" class="w-full max-w-lg bg-white min-h-screen shadow-2xl flex flex-col relative">
+        
+        <nav class="p-6 border-b border-slate-50 flex items-center gap-3">
+            <span class="text-indigo-600">⚖️</span>
+            <span class="text-sm font-bold text-slate-800 tracking-tight">Criminal Law Academy</span>
+        </nav>
 
-    <script type="text/babel">
-        const { useState } = React;
+        <div id="page-intro" class="page active flex-col items-center justify-center p-12 text-center space-y-8 flex-1">
+            <div class="w-24 h-24 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-xl rotate-3">
+                <span class="text-4xl text-white">🔨</span>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800 mb-2">ศาลอาญาคาเฟ่</h1>
+                <p class="text-slate-500 font-light italic">โดยคุณ ณัฐพล บัวทอง</p>
+            </div>
+            <button onclick="showPage('page-lesson')" class="bg-indigo-600 text-white font-semibold py-4 px-10 rounded-2xl shadow-lg active:scale-95 transition-all">
+                เริ่มเรียนรู้
+            </button>
+        </div>
 
-        // Icon Helper ที่เสถียรขึ้น
-        const Icon = ({ name, size = 24, className = "" }) => {
-            const LucideIcon = window.lucide[name];
-            return LucideIcon ? <LucideIcon size={size} className={className} /> : null;
-        };
+        <div id="page-lesson" class="page flex-col p-8 space-y-6 flex-1">
+            <h2 class="text-2xl font-bold text-indigo-900 flex items-center gap-2">🧠 หลักการกระทำ</h2>
+            <div class="law-card p-8 space-y-4">
+                <p class="text-slate-600 leading-relaxed">การกระทำทางกฎหมายอาญาต้องครบ **3 องค์ประกอบ**:</p>
+                <div class="space-y-3">
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 font-medium">💭 1. คิด (Thinking)</div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 font-medium">💡 2. ตกลงใจ (Deciding)</div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 font-medium">🏃 3. กระทำ (Executing)</div>
+                </div>
+            </div>
+            <button onclick="showPage('page-quiz')" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold">เริ่มทำแบบทดสอบ ➡️</button>
+        </div>
 
-        const CriminalLawGame = () => {
-            const [activeTab, setActiveTab] = useState('intro');
-            const [score, setScore] = useState(0);
-            const [showAnswer, setShowAnswer] = useState(false);
-            const [currentQuiz, setCurrentQuiz] = useState(0);
+        <div id="page-quiz" class="page flex-col p-8 flex-1">
+            <div class="flex justify-between items-center mb-8">
+                <span id="quiz-header" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Case 1 / 3</span>
+                <div id="score-badge" class="px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold">Score: 0</div>
+            </div>
+            <div class="law-card p-8 mb-8">
+                <p id="question-text" class="text-lg font-medium text-slate-800 leading-relaxed"></p>
+            </div>
+            <div id="options-container" class="space-y-3">
+                </div>
+            <div id="feedback-container" class="hidden mt-6 bg-indigo-900 p-8 rounded-[2rem] text-white">
+                <p id="feedback-text" class="text-indigo-100 font-light mb-8"></p>
+                <button onclick="nextQuestion()" class="w-full bg-white text-indigo-900 py-4 rounded-2xl font-bold">ถัดไป ➡️</button>
+            </div>
+        </div>
 
-            const quizData = [
-                {
-                    id: 1,
-                    question: "แดงนอนละเมอถีบภรรยาตกเตียงแขนหัก โดยที่แดงไม่เคยรู้มาก่อนว่าตนเองมีอาการนี้",
-                    options: [
-                        { text: "ผิดฐานทำร้ายร่างกาย", correct: false, reason: "ไม่ใช่! เพราะขาดองค์ประกอบ 'การกระทำ' (ไม่ได้คิดและตกลงใจ)" },
-                        { text: "ไม่ผิดเลย เพราะไม่มีการกระทำ", correct: true, reason: "ถูกต้อง! การละเมอโดยไม่รู้ตัว = ร่างกายเคลื่อนไหวแต่จิตใจไม่ได้สั่ง = ไม่มีการกระทำ" }
-                    ]
-                },
-                {
-                    id: 2,
-                    question: "แดงรู้ตัวว่าเมาแล้วชอบละเมอชกต่อย แต่ก็ยังกินเหล้าแล้วไปนอนข้างดำ สุดท้ายละเมอต่อยดำจริงๆ",
-                    options: [
-                        { text: "ผิด! เพราะรู้ตัวล่วงหน้า (Free in Cause)", correct: true, reason: "เยี่ยมมาก! แม้ตอนต่อยจะไม่รู้ตัว แต่เหตุเกิดจากการกระทำตอนมีสติ (กินเหล้า+ไปนอนข้างเขา)" },
-                        { text: "ไม่ผิด เพราะตอนต่อยไม่รู้ตัว", correct: false, reason: "ผิด! กรณีนี้เข้าข่ายทฤษฎี Free in Cause" }
-                    ]
-                },
-                {
-                    id: 3,
-                    question: "Lifeguard เห็นคนจมน้ำแล้วยืนมองเฉยๆ เพราะหมั่นไส้ (อยากให้ตาย) จนเขาตายจริงๆ",
-                    options: [
-                        { text: "ผิดฐานละเว้น (ลหุโทษ)", correct: false, reason: "เบาไป! Lifeguard มีหน้าที่เฉพาะ การนิ่งเฉยถือเป็นการฆ่า" },
-                        { text: "ผิดฐานฆ่าคนตายโดยเจตนา (งดเว้น)", correct: true, reason: "ถูกต้อง! นี่คือการ 'งดเว้น' เพราะเขามีหน้าที่ป้องกันผล" }
-                    ]
-                }
-            ];
+        <div id="page-result" class="page flex-col items-center justify-center p-12 text-center space-y-8 flex-1">
+            <div class="text-8xl">🏆</div>
+            <div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">จบคดีความ</h2>
+                <p id="final-score-text" class="text-slate-500"></p>
+            </div>
+            <button onclick="location.reload()" class="bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold shadow-lg">เริ่มใหม่อีกครั้ง 🔄</button>
+        </div>
 
-            const handleAnswer = (isCorrect) => {
-                setShowAnswer(true);
-                if (isCorrect) setScore(score + 1);
-            };
+        <footer class="p-6 bg-slate-50/50 flex justify-around border-t border-slate-100 mt-auto">
+            <button onclick="showPage('page-intro')" class="text-slate-400 hover:text-indigo-600 flex flex-col items-center gap-1">
+                <span class="text-xl">🏠</span>
+                <span class="text-[10px] font-bold uppercase">หน้าแรก</span>
+            </button>
+            <button onclick="showPage('page-quiz')" class="text-slate-400 hover:text-indigo-600 flex flex-col items-center gap-1">
+                <span class="text-xl">⚖️</span>
+                <span class="text-[10px] font-bold uppercase">ทดสอบ</span>
+            </button>
+        </footer>
+    </div>
 
-            const nextQuiz = () => {
-                if (currentQuiz < quizData.length - 1) {
-                    setCurrentQuiz(currentQuiz + 1);
-                    setShowAnswer(false);
-                } else {
-                    setActiveTab('summary');
-                }
-            };
+    <script>
+        // ข้อมูลควิซ
+        const quizData = [
+            {
+                q: "แดงนอนละเมอถีบภรรยาตกเตียงแขนหัก โดยที่แดงไม่เคยรู้มาก่อนว่าตนเองมีอาการนี้",
+                options: [
+                    { t: "ผิดฐานทำร้ายร่างกาย", c: false, r: "ไม่ใช่! เพราะขาดองค์ประกอบ 'การกระทำ' (ไม่ได้คิดและตกลงใจ)" },
+                    { t: "ไม่ผิดเลย เพราะไม่มีการกระทำ", c: true, r: "ถูกต้อง! การละเมอโดยไม่รู้ตัว = ไม่มีการกระทำ" }
+                ]
+            },
+            {
+                q: "แดงรู้ตัวว่าเมาแล้วชอบละเมอชกต่อย แต่ก็ยังกินเหล้าแล้วไปนอนข้างดำ สุดท้ายละเมอต่อยดำจริงๆ",
+                options: [
+                    { t: "ผิด! เพราะรู้ตัวล่วงหน้า (Free in Cause)", c: true, r: "เยี่ยมมาก! แม้ตอนต่อยจะไม่รู้ตัว แต่เหตุเกิดจากการกระทำตอนมีสติ" },
+                    { t: "ไม่ผิด เพราะตอนต่อยไม่รู้ตัว", c: false, r: "ผิด! กรณีนี้เข้าข่ายทฤษฎี Free in Cause" }
+                ]
+            },
+            {
+                q: "Lifeguard เห็นคนจมน้ำแล้วยืนมองเฉยๆ เพราะหมั่นไส้ (อยากให้ตาย) จนเขาตายจริงๆ",
+                options: [
+                    { t: "ผิดฐานละเว้น (ลหุโทษ)", c: false, r: "เบาไป! Lifeguard มีหน้าที่เฉพาะ การนิ่งเฉยถือเป็นการฆ่า" },
+                    { t: "ผิดฐานฆ่าคนตายโดยเจตนา (งดเว้น)", c: true, r: "ถูกต้อง! นี่คือการ 'งดเว้น' เพราะเขามีหน้าที่ป้องกันผล" }
+                ]
+            }
+        ];
 
-            const renderContent = () => {
-                switch (activeTab) {
-                    case 'intro':
-                        return (
-                            <div className="flex flex-col items-center justify-center p-12 text-center space-y-8 animate-fade-in">
-                                <div className="w-24 h-24 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-xl mb-4 rotate-3">
-                                    <Icon name="Gavel" size={48} className="text-white" />
-                                </div>
-                                <div>
-                                    <h1 className="text-3xl font-bold text-slate-800 mb-2">ศาลอาญาคาเฟ่</h1>
-                                    <p className="text-slate-500 font-light italic">Criminal Law Academy</p>
-                                </div>
-                                <div className="space-y-2">
-                                    <p className="text-slate-600">โดยคุณ ณัฐพล บัวทอง</p>
-                                    <p className="text-sm text-slate-400">เรียนรู้หลักกฎหมายผ่านสถานการณ์จำลอง</p>
-                                </div>
-                                <button 
-                                    onClick={() => setActiveTab('definition')}
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-10 rounded-2xl shadow-lg transition-all active:scale-95"
-                                >
-                                    เริ่มเรียนรู้
-                                </button>
-                            </div>
-                        );
+        let currentStep = 0;
+        let score = 0;
 
-                    case 'definition':
-                        return (
-                            <div className="space-y-6 p-8 animate-fade-in overflow-y-auto">
-                                <h2 className="text-2xl font-bold text-indigo-900 flex items-center gap-2">
-                                    <Icon name="Brain" className="text-indigo-500" /> หลักการกระทำ
-                                </h2>
-                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                                    <p className="text-slate-600 mb-6 leading-relaxed">การกระทำทางกฎหมายอาญาต้องครบ **3 องค์ประกอบ** ถึงจะเรียกว่ามีการกระทำ:</p>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                            <span className="text-xl">💭</span>
-                                            <span className="font-medium">1. คิด (Thinking)</span>
-                                        </div>
-                                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                            <span className="text-xl">💡</span>
-                                            <span className="font-medium">2. ตกลงใจ (Deciding)</span>
-                                        </div>
-                                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                            <span className="text-xl">🏃</span>
-                                            <span className="font-medium">3. กระทำ (Executing)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button onClick={() => setActiveTab('omission')} className="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold transition-all hover:bg-black">
-                                    บทเรียนถัดไป ➡️
-                                </button>
-                            </div>
-                        );
+        // ฟังก์ชันสลับหน้า (แบบรวดเร็ว)
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            if(pageId === 'page-quiz') loadQuestion();
+        }
 
-                    case 'omission':
-                        return (
-                            <div className="space-y-6 p-8 animate-fade-in overflow-y-auto">
-                                <h2 className="text-2xl font-bold text-indigo-900">งดเว้น vs ละเว้น</h2>
-                                <div className="grid gap-4">
-                                    <div className="bg-white p-6 rounded-3xl border border-rose-100">
-                                        <h3 className="font-bold text-rose-600 mb-2">● การงดเว้น</h3>
-                                        <p className="text-sm text-slate-600">นิ่งเฉยในหน้าที่เฉพาะ (เช่น พ่อแม่) <br/>**โทษหนักเท่าลงมือทำเอง**</p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-3xl border border-emerald-100">
-                                        <h3 className="font-bold text-emerald-600 mb-2">● การละเว้น</h3>
-                                        <p className="text-sm text-slate-600">นิ่งเฉยในหน้าที่พลเมืองดีทั่วไป <br/>**โทษลหุโทษ (โทษเบา)**</p>
-                                    </div>
-                                </div>
-                                <button onClick={() => setActiveTab('quiz')} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl">
-                                    เริ่มทำแบบทดสอบ ⚔️
-                                </button>
-                            </div>
-                        );
+        // ฟังก์ชันโหลดคำถาม
+        function loadQuestion() {
+            const data = quizData[currentStep];
+            document.getElementById('quiz-header').innerText = `Case ${currentStep + 1} / ${quizData.length}`;
+            document.getElementById('question-text').innerText = data.q;
+            document.getElementById('feedback-container').classList.add('hidden');
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            container.classList.remove('hidden');
 
-                    case 'quiz':
-                        const quiz = quizData[currentQuiz];
-                        return (
-                            <div className="p-8 animate-fade-in">
-                                <div className="flex justify-between items-center mb-8">
-                                    <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Case {currentQuiz + 1} / 3</span>
-                                    <div className="px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold">Score: {score}</div>
-                                </div>
-                                <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 mb-8">
-                                    <p className="text-lg font-medium text-slate-800 leading-relaxed">{quiz.question}</p>
-                                </div>
-                                {!showAnswer ? (
-                                    <div className="space-y-3">
-                                        {quiz.options.map((opt, i) => (
-                                            <button key={i} onClick={() => handleAnswer(opt.correct)} className="btn-minimal w-full text-left p-5 rounded-2xl bg-white hover:bg-indigo-50 hover:border-indigo-200 text-slate-700 font-medium">
-                                                {opt.text}
-                                            </button>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="bg-indigo-900 p-8 rounded-[2rem] text-white animate-fade-in">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Icon name="CheckCircle" size={20} className="text-emerald-400" />
-                                            <p className="font-bold">คำวินิจฉัย</p>
-                                        </div>
-                                        <p className="text-indigo-100 font-light leading-relaxed mb-8">{quiz.options.find(o => o.correct).reason}</p>
-                                        <button onClick={nextQuiz} className="w-full bg-white text-indigo-900 py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">
-                                            คดีต่อไป ➡️
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        );
+            data.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-5 rounded-2xl bg-white border border-slate-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all font-medium text-slate-700 active:scale-95";
+                btn.innerText = opt.t;
+                btn.onclick = () => checkAnswer(opt.c, opt.r);
+                container.appendChild(btn);
+            });
+        }
 
-                    case 'summary':
-                        return (
-                            <div className="text-center p-12 space-y-8 animate-fade-in">
-                                <div className="relative inline-block">
-                                    <div className="absolute inset-0 bg-yellow-400 blur-2xl opacity-20 rounded-full"></div>
-                                    <Icon name="Trophy" size={100} className="mx-auto text-yellow-500 relative" />
-                                </div>
-                                <div>
-                                    <h2 className="text-3xl font-bold text-slate-800 mb-2">จบคดีความ</h2>
-                                    <p className="text-slate-500">คุณทำคะแนนได้ {score} จาก 3 คะแนน</p>
-                                </div>
-                                <button onClick={() => {setScore(0); setCurrentQuiz(0); setShowAnswer(false); setActiveTab('intro');}} className="bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">
-                                    เริ่มใหม่อีกครั้ง 🔄
-                                </button>
-                            </div>
-                        );
-                    default: return null;
-                }
-            };
+        // ตรวจคำตอบ
+        function checkAnswer(isCorrect, reason) {
+            if (isCorrect) {
+                score++;
+                document.getElementById('score-badge').innerText = `Score: ${score}`;
+            }
+            document.getElementById('options-container').classList.add('hidden');
+            document.getElementById('feedback-text').innerText = reason;
+            document.getElementById('feedback-container').classList.remove('hidden');
+        }
 
-            return (
-                <div className="min-h-screen flex flex-col max-w-lg mx-auto bg-white shadow-2xl relative">
-                    <nav className="bg-white/80 backdrop-blur-md p-6 sticky top-0 z-50 flex justify-between items-center border-b border-slate-50">
-                        <div className="flex items-center gap-3 font-bold text-slate-800">
-                            <Icon name="BookOpen" size={22} className="text-indigo-600" />
-                            <span className="text-sm tracking-tight">Criminal Law Academy</span>
-                        </div>
-                    </nav>
-                    
-                    <main className="flex-1 overflow-hidden">{renderContent()}</main>
-                    
-                    <footer className="p-6 bg-slate-50/50 flex justify-around border-t border-slate-100">
-                        <button onClick={() => setActiveTab('intro')} className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'intro' ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}>
-                            <Icon name="Home" size={20} />
-                            <span className="text-[10px] font-bold uppercase tracking-tighter">หน้าแรก</span>
-                        </button>
-                        <button onClick={() => setActiveTab('quiz')} className={`flex flex-col items-center gap-1 transition-all
+        // ไปข้อถัดไป
+        function nextQuestion() {
+            currentStep++;
+            if (currentStep < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        // หน้าสรุป
+        function showResult() {
+            showPage('page-result');
+            document.getElementById('final-score-text').innerText = `คุณทำคะแนนได้ ${score} จาก ${quizData.length} คะแนน`;
+        }
+    </script>
+</body>
+</html>
