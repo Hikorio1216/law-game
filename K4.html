@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law Pro: Causation (ความสัมพันธ์ระหว่างการกระทำและผล)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --primary: #2563eb; /* Royal Blue */
+            --primary-dark: #1e40af;
+            --accent: #f97316; /* Orange Alert */
+            --text-main: #1e293b;
+            --success: #10b981;
+            --error: #ef4444;
+            --chain: #94a3b8;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- Header & Nav --- */
+        .back-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            background: white; border: 2px solid var(--primary);
+            color: var(--primary); padding: 8px 16px; border-radius: 30px;
+            text-decoration: none; font-weight: bold; transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .back-btn:hover { background: var(--primary); color: white; transform: scale(1.05); }
+
+        .container { max-width: 900px; width: 100%; margin-top: 60px; }
+
+        h1 {
+            text-align: center; color: var(--primary-dark);
+            font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: -1px;
+            animation: slideDown 0.8s ease-out;
+        }
+        .subtitle { 
+            text-align: center; color: #64748b; margin-bottom: 30px; 
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* --- Tabs --- */
+        .tabs {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px;
+            background: white; padding: 10px; border-radius: 20px;
+            box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.2);
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .tab-btn {
+            border: none; padding: 12px 20px; background: transparent;
+            color: #64748b; font-family: 'Prompt', sans-serif; font-weight: 600;
+            cursor: pointer; border-radius: 12px; transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--primary); color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); transform: translateY(-2px);
+        }
+
+        /* --- Sections --- */
+        .section { display: none; animation: slideUp 0.5s ease-out; }
+        .section.active { display: block; }
+
+        /* --- Study Content --- */
+        .study-card {
+            background: white; border-radius: 20px; margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-left: 6px solid var(--primary);
+            overflow: hidden; transition: transform 0.3s;
+        }
+        .study-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); }
+        
+        details summary {
+            cursor: pointer; padding: 20px; font-weight: 700; color: var(--primary-dark);
+            font-size: 1.1rem; list-style: none; display: flex; justify-content: space-between;
+            align-items: center; background: #f8fafc;
+        }
+        details summary:hover { background: #eff6ff; }
+        .study-content { padding: 25px; line-height: 1.8; color: #334155; }
+        
+        .highlight { color: var(--primary); background: #dbeafe; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .highlight-orange { color: #c2410c; background: #ffedd5; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+
+        .dika-box {
+            background: #fff1f2; border: 2px dashed #f43f5e;
+            padding: 15px; margin: 15px 0; border-radius: 12px;
+            font-style: italic; color: #881337; position: relative;
+        }
+        .dika-badge {
+            position: absolute; top: -10px; right: 20px; background: #f43f5e;
+            color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: bold;
+        }
+
+        /* --- Game Global --- */
+        .game-board {
+            background: white; border-radius: 24px; padding: 30px;
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+            text-align: center; position: relative; min-height: 400px;
+            border: 1px solid #e2e8f0;
+        }
+        .score-float {
+            position: absolute; top: 20px; right: 20px;
+            background: var(--text-main); color: white; padding: 5px 15px;
+            border-radius: 20px; font-weight: bold; font-size: 0.9rem;
+        }
+
+        /* Game 1: Sorter */
+        .sort-container { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
+        .drop-zone {
+            width: 45%; border: 3px dashed var(--chain); border-radius: 15px;
+            padding: 20px; min-height: 200px; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .drop-zone h3 { color: var(--chain); margin-bottom: 10px; pointer-events: none; }
+        .drop-zone.active { border-color: var(--primary); background: #eff6ff; }
+        
+        .item-card {
+            background: white; border: 2px solid var(--primary); padding: 15px 25px;
+            border-radius: 12px; font-weight: bold; cursor: grab; margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); animation: popIn 0.5s;
+            font-size: 1.2rem;
+        }
+
+        /* Game 2: The Chain (Animation) */
+        .chain-visual {
+            display: flex; align-items: center; justify-content: center; margin: 30px 0;
+            gap: 10px; font-size: 2rem; color: var(--chain); flex-wrap: wrap;
+        }
+        .chain-node {
+            background: var(--primary); color: white; padding: 15px 25px; border-radius: 12px;
+            font-size: 1rem; font-weight: bold; position: relative;
+            animation: slideInRight 0.5s;
+        }
+        .chain-arrow { color: var(--accent); font-weight: bold; animation: pulse 2s infinite; }
+        .intervener {
+            background: var(--accent); color: white; padding: 10px; border-radius: 50%;
+            width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; border: 4px solid white; box-shadow: 0 0 0 4px var(--accent);
+            animation: bounceIn 0.8s;
+        }
+
+        /* Game 3 & 4: Quiz Styles */
+        .quiz-btn {
+            background: white; border: 2px solid #cbd5e1;
+            color: var(--text-main); padding: 18px; width: 100%; margin-bottom: 12px;
+            cursor: pointer; border-radius: 16px; text-align: left; transition: all 0.2s;
+            font-size: 1rem; position: relative; overflow: hidden;
+        }
+        .quiz-btn:hover:not(:disabled) { border-color: var(--primary); background: #f8fafc; transform: translateX(5px); }
+        .quiz-btn.correct { background: #dcfce7; border-color: var(--success); color: #166534; }
+        .quiz-btn.wrong { background: #fee2e2; border-color: var(--error); color: #991b1b; }
+
+        /* Animations */
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes bounceIn { 0%{transform:scale(0);} 50%{transform:scale(1.2);} 100%{transform:scale(1);} }
+        @keyframes slideInRight { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .next-btn {
+            width: 100%; padding: 15px; background: var(--text-main); color: white;
+            border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem;
+            margin-top: 20px; cursor: pointer; display: none;
+            box-shadow: 0 4px 0 #0f172a; transition: 0.1s;
+        }
+        .next-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .feedback-box {
+            margin-top: 20px; padding: 20px; border-radius: 15px; display: none;
+            font-weight: 500; text-align: left; animation: slideUp 0.3s;
+        }
+        .feedback-box.correct { background: #d1fae5; color: #065f46; border-left: 5px solid var(--success); }
+        .feedback-box.wrong { background: #fee2e2; color: #7f1d1d; border-left: 5px solid var(--error); }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
+
+    <div class="container">
+        <h1>Causation Master</h1>
+        <div class="subtitle">ความสัมพันธ์ระหว่างการกระทำและผล (The Link)</div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('study')">📖 สรุปหลักกฎหมาย</button>
+            <button class="tab-btn" onclick="switchTab('game1')">⚖️ แยกประเภท (10 ข้อ)</button>
+            <button class="tab-btn" onclick="switchTab('game2')">🔗 โซ่แห่งผล (10 ข้อ)</button>
+            <button class="tab-btn" onclick="switchTab('game3')">⚡ เหตุแทรกแซง (5 คดี)</button>
+            <button class="tab-btn" onclick="switchTab('game4')">🔥 ฎีกา Survivor (10 ข้อ)</button>
+        </div>
+
+        <div id="study" class="section active">
+            <div class="study-card">
+                <details open>
+                    <summary>1. ความผิดที่ต้องการผล vs ไม่ต้องการผล</summary>
+                    <div class="study-content">
+                        <p><strong>(ก) ความผิดที่ไม่ต้องการผล (Conduct Crime):</strong> สำเร็จทันทีเมื่อลงมือทำ ไม่ต้องรอดูผลสุดท้าย</p>
+                        <ul>
+                            <li>แจ้งความเท็จ (ม.137), ใช้เอกสารปลอม (ม.268), เบิกความเท็จ (ม.177)</li>
+                            <li><span class="highlight">หลัก:</span> ไม่ต้องพิจารณาความสัมพันธ์ระหว่างการกระทำและผล! (เพราะผิดไปแล้ว)</li>
+                        </ul>
+                        <p><strong>(ข) ความผิดที่ต้องการผล (Result Crime):</strong> ต้องมีผลเกิดขึ้นจึงจะผิดสำเร็จ</p>
+                        <ul>
+                            <li>ฆ่าคนตาย (ม.288), ทำร้ายร่างกาย (ม.295)</li>
+                            <li><span class="highlight-orange">ต้องพิจารณา Causation:</span> ผลต้องเกิดจากการกระทำนั้น ถ้าไม่สัมพันธ์กัน รับผิดแค่พยายาม</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>2. ทฤษฎีเงื่อนไข (Condition Theory)</summary>
+                    <div class="study-content">
+                        <p><strong>"ถ้าไม่มีการกระทำ... ผลก็จะไม่เกิด"</strong> (Sine Qua Non)</p>
+                        <p>ศาลฎีกาใช้หลักนี้ในการดู <strong>"ผลโดยตรง"</strong></p>
+                        <div class="dika-box">
+                            <span class="dika-badge">ฎีกา 9413/2552</span>
+                            "จำเลยวิ่งไล่ทำร้ายผู้ตาย ผู้ตายหนีลงแม่น้ำจมน้ำตาย = ถ้าไม่ไล่ ก็ไม่หนีลงน้ำ = ความตายเป็นผลโดยตรงจากการทำร้าย"
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>3. เหตุแทรกแซง (Intervening Cause)</summary>
+                    <div class="study-content">
+                        <p>มีเหตุใหม่เข้ามาคั่นกลางระหว่างการกระทำและผล ผู้กระทำต้องรับผิดในผลสุดท้ายหรือไม่? ให้ดูว่า <strong>"วิญญูชนคาดหมายได้หรือไม่"</strong></p>
+                        <ul>
+                            <li><span class="highlight">คาดหมายได้:</span> ยังถือเป็นผลโดยตรง (รับผิดต่อผล) เช่น แผลติดเชื้อ, โรคเก่ากำเริบ (ฎีกา 657/2532), หมอรักษาผิดพลาดเล็กน้อย</li>
+                            <li><span class="highlight-orange">คาดหมายไม่ได้:</span> โซ่ขาด! รับผิดแค่สิ่งที่ทำไป (เช่น พยายามฆ่า) เช่น ญาติถอดเครื่องช่วยหายใจ (ฎีกา 659/2532)</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>4. ทฤษฎีเหตุที่เหมาะสม (Adequate Cause)</summary>
+                    <div class="study-content">
+                        <p>ใช้กับกรณี <strong>"รับโทษหนักขึ้น"</strong> (ม.63) ผลนั้นต้องเป็น <strong>"ผลธรรมดา"</strong> ที่ย่อมเกิดขึ้นได้</p>
+                        <p>ตัวอย่าง: เจตนาทำร้าย -> ผู้ตายเป็นโรคหัวใจ -> ตกใจหัวใจวายตาย = เป็นผลธรรมดาที่เกิดขึ้นได้ (ผิดทำร้ายจนตาย ม.290)</p>
+                        <div class="dika-box">
+                            <span class="dika-badge">ฎีกา 6389/2560</span>
+                            "ขับรถเบียดเพื่อทำร้าย รถล้มตาย = ผลโดยตรงจากการทำร้าย (ผิด ม.290) <br>
+                            แต่ไม่ใช่ผลโดยตรงจากการอนาจาร (ไม่ผิด อนาจารจนตาย)"
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div id="game1" class="section">
+            <div class="game-board">
+                <div class="score-float">Score: <span id="g1-score">0</span></div>
+                <h2 style="color:var(--primary);">⚖️ แยกประเภทความผิด</h2>
+                <p>ความผิดฐานนี้ "ต้องการผล" หรือ "ไม่ต้องการผล"?</p>
+                
+                <div id="g1-game-area" style="margin-top:40px;">
+                    <div id="g1-card" class="item-card">Loading...</div>
+                    <div class="sort-container">
+                        <button class="drop-zone" onclick="g1Answer('no_result')" style="border-color:var(--accent); cursor:pointer;">
+                            <h3 style="color:var(--accent)">🚫 ไม่ต้องการผล</h3>
+                            <p style="font-size:0.8rem">(Conduct Crime)</p>
+                        </button>
+                        <button class="drop-zone" onclick="g1Answer('result')" style="border-color:var(--success); cursor:pointer;">
+                            <h3 style="color:var(--success)">🎯 ต้องการผล</h3>
+                            <p style="font-size:0.8rem">(Result Crime)</p>
+                        </button>
+                    </div>
+                </div>
+                <div id="g1-feedback" class="feedback-box"></div>
+            </div>
+        </div>
+
+        <div id="game2" class="section">
+            <div class="game-board">
+                <div class="score-float">Score: <span id="g2-score">0</span></div>
+                <h2 style="color:var(--primary);">🔗 โซ่แห่งผล (The Chain)</h2>
+                <p>เหตุการณ์นี้ถือเป็น "ผลโดยตรง" หรือไม่? (พิจารณาทฤษฎีเงื่อนไข)</p>
+                
+                <div id="g2-content" style="margin-top:30px;">
+                    <div class="chain-visual" id="g2-visual"></div>
+                    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                        <button class="quiz-btn" style="text-align:center; font-weight:bold;" onclick="g2Answer(true)">✅ เป็นผลโดยตรง</button>
+                        <button class="quiz-btn" style="text-align:center; font-weight:bold;" onclick="g2Answer(false)">❌ ไม่สัมพันธ์กัน</button>
+                    </div>
+                </div>
+                <div id="g2-feedback" class="feedback-box"></div>
+                <button id="g2-next" class="next-btn" onclick="nextG2()">ข้อต่อไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game3" class="section">
+            <div class="game-board">
+                <div class="score-float">Case: <span id="g3-round">1</span>/5</div>
+                <h2 style="color:var(--accent);">⚡ วิเคราะห์เหตุแทรกแซง</h2>
+                <p>วิญญูชน "คาดหมายได้" หรือไม่? โซ่ขาดหรือไม่?</p>
+                
+                <div class="study-card" style="margin-top:20px; border-color:var(--accent);">
+                    <div class="study-content" id="g3-scenario" style="font-size:1.1rem; font-weight:bold;"></div>
+                </div>
+
+                <div class="chain-visual">
+                    <div class="chain-node">การกระทำ</div>
+                    <div class="chain-arrow">➜</div>
+                    <div class="intervener">⚡</div>
+                    <div class="chain-arrow">➜</div>
+                    <div class="chain-node">ผลสุดท้าย</div>
+                </div>
+
+                <div id="g3-options"></div>
+                <div id="g3-feedback" class="feedback-box"></div>
+                <button id="g3-next" class="next-btn" onclick="nextG3()">คดีต่อไป ➜</button>
+            </div>
+        </div>
+
+        <div id="game4" class="section">
+            <div class="game-board" style="border-color:var(--error);">
+                <div class="score-float" style="background:var(--error);">Lives: <span id="g4-lives">❤️❤️❤️</span></div>
+                <h2 style="color:var(--error);">🔥 ฎีกา Survivor</h2>
+                <p>ตอบผิดเกิน 3 ครั้ง จบเกมทันที!</p>
+                
+                <div id="g4-content" style="margin-top:30px;">
+                    <p id="g4-question" style="font-size:1.1rem; font-weight:bold; margin-bottom:20px;"></p>
+                    <div id="g4-options"></div>
+                </div>
+                <div id="g4-feedback" class="feedback-box"></div>
+                <button id="g4-next" class="next-btn" onclick="nextG4()">ลุยต่อ ➜</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if(tabId === 'game1') initG1();
+            if(tabId === 'game2') initG2();
+            if(tabId === 'game3') initG3();
+            if(tabId === 'game4') initG4();
+        }
+
+        // --- GAME 1 DATA: Conduct vs Result ---
+        const g1Data = [
+            { t: "แจ้งความเท็จ (ม.137)", type: "no_result", r: "ผิดทันทีที่แจ้ง ไม่ต้องรอให้เจ้าพนักงานเชื่อ" },
+            { t: "ฆ่าผู้อื่น (ม.288)", type: "result", r: "ต้องมีผลคือความตายเกิดขึ้น จึงจะผิดสำเร็จ" },
+            { t: "เบิกความเท็จ (ม.177)", type: "no_result", r: "ผิดทันทีที่เบิกความ ไม่ต้องรอให้ศาลเชื่อ" },
+            { t: "ใช้เอกสารปลอม (ม.268)", type: "no_result", r: "ผิดทันทีที่ยื่น/แสดงเอกสาร" },
+            { t: "ทำร้ายร่างกาย (ม.295)", type: "result", r: "ต้องเกิดอันตรายแก่กาย/จิตใจ จึงจะผิดสำเร็จ" },
+            { t: "พยายามแจ้งความเท็จ", type: "no_result", r: "เช่น ส่งจดหมายแจ้งเท็จแต่จดหมายหาย (ยังไม่ถึง J.P.) = พยายาม" },
+            { t: "ทำให้เสียทรัพย์ (ม.358)", type: "result", r: "ต้องมีการเสียหาย/เสื่อมค่า เกิดขึ้น" },
+            { t: "ดูหมิ่นซึ่งหน้า", type: "no_result", r: "กล่าววาจาจบคือกรรมเดียว ผิดทันที" },
+            { t: "ยักยอกทรัพย์", type: "no_result", r: "เบียดบังทรัพย์ปุ๊บ ผิดปั๊บ (สำเร็จทันที)" }, // Technically Conduct but debatable in theory, keep clear ones
+            { t: "ประมาทเป็นเหตุให้ผู้อื่นถึงแก่ความตาย", type: "result", r: "ต้องมีผลคือความตาย" }
+        ];
+        let g1Idx = 0, g1Score = 0;
+        function initG1() { g1Idx=0; g1Score=0; loadG1(); }
+        function loadG1() {
+            if(g1Idx >= g1Data.length) { 
+                document.getElementById('g1-game-area').innerHTML = `<h2>🎉 จบภารกิจ! คะแนน: ${g1Score}/${g1Data.length}</h2>`;
+                return;
+            }
+            const item = g1Data[g1Idx];
+            document.getElementById('g1-card').innerText = item.t;
+            document.getElementById('g1-feedback').style.display = 'none';
+            document.getElementById('g1-score').innerText = g1Score;
+        }
+        function g1Answer(ans) {
+            const item = g1Data[g1Idx];
+            const fb = document.getElementById('g1-feedback');
+            fb.style.display = 'block';
+            if(ans === item.type) {
+                g1Score++; fb.className = 'feedback-box correct'; fb.innerText = "✅ ถูกต้อง! " + item.r;
+            } else {
+                fb.className = 'feedback-box wrong'; fb.innerText = "❌ ผิด! " + item.r;
+            }
+            setTimeout(() => { g1Idx++; loadG1(); }, 2000);
+        }
+
+        // --- GAME 2 DATA: The Chain ---
+        const g2Data = [
+            { act:"ไล่ทำร้าย", res:"กระโดดน้ำตาย", isDirect:true, r:"ถ้าไม่ไล่ ก็ไม่โดด (ฎีกา 9413/2552)" },
+            { act:"ชกที่ท่าเรือ", res:"ตกน้ำตาย", isDirect:true, r:"ถ้าไม่ชก ก็ไม่ตกน้ำ (ฎีกา 1617/2539)" },
+            { act:"ขับรถเบียด", res:"รถล้มตาย", isDirect:true, r:"เป็นผลโดยตรงจากการทำร้าย (ฎีกา 6389/2560)" },
+            { act:"ทำอนาจาร", res:"รถล้มตาย", isDirect:false, r:"ความตายไม่ใช่ผลโดยตรงจากการอนาจาร (ฎีกา 6389/2560)" },
+            { act:"ชกหน้า", res:"โรคตับแข็งกำเริบตาย", isDirect:true, r:"ถ้าไม่ชก ก็ไม่ตายเร็วขึ้น (ฎีกา 657/2532)" },
+            { act:"ข่มขืนที่ระเบียง", res:"ถอยหนีตกตึกตาย", isDirect:true, r:"ผลโดยตรงจากเจตนาฆ่าเล็งเห็นผล (ฎีกา 4563/2543)" },
+            { act:"ปามีดใส่", res:"แผลติดเชื้อตาย", isDirect:true, r:"การติดเชื้อเป็นผลธรรมดาที่เกิดขึ้นได้" },
+            { act:"ด่าว่าหยาบคาย", res:"น้อยใจผูกคอตาย", isDirect:false, r:"การฆ่าตัวตายเป็นการตัดตอนผล (โดยหลัก)" },
+            { act:"ยิงบาดเจ็บ", res:"รพ.ไฟไหม้คลอกตาย", isDirect:false, r:"เหตุแทรกแซงที่คาดหมายไม่ได้ (ตัดโซ่)" },
+            { act:"วางเพลิง", res:"พลเมืองดีมาช่วยแล้วถูกไฟคลอก", isDirect:false, r:"ผู้ตายสมัครใจเสี่ยงภัยเอง ไม่ใช่ผลโดยตรงจากการวางเพลิง (ฎีกา 1412/2504)" }
+        ];
+        let g2Idx = 0, g2Score = 0;
+        function initG2() { g2Idx=0; g2Score=0; loadG2(); }
+        function loadG2() {
+            if(g2Idx >= g2Data.length) { 
+                document.getElementById('game2').querySelector('.game-board').innerHTML = `<h2>🔗 เชื่อมโยงสำเร็จ! คะแนน: ${g2Score}/${g2Data.length}</h2>`;
+                return;
+            }
+            const item = g2Data[g2Idx];
+            document.getElementById('g2-visual').innerHTML = `
+                <div class="chain-node">${item.act}</div>
+                <div class="chain-arrow">--------></div>
+                <div class="chain-node" style="background:var(--text-main)">${item.res}</div>
+            `;
+            document.getElementById('g2-feedback').style.display='none';
+            document.getElementById('g2-next').style.display='none';
+            document.getElementById('g2-score').innerText = g2Score;
+        }
+        function g2Answer(userSaysDirect) {
+            const item = g2Data[g2Idx];
+            const fb = document.getElementById('g2-feedback'); fb.style.display='block';
+            if(userSaysDirect === item.isDirect) {
+                g2Score++; fb.className='feedback-box correct'; fb.innerText="✅ ถูกต้อง! "+item.r;
+            } else {
+                fb.className='feedback-box wrong'; fb.innerText="❌ ผิด! "+item.r;
+            }
+            document.getElementById('g2-next').style.display='block';
+        }
+        function nextG2() { g2Idx++; loadG2(); }
+
+        // --- GAME 3 DATA: Intervening Cause ---
+        const g3Data = [
+            { s: "แดงยิงดำบาดเจ็บ -> ดำไป รพ. -> หมอรักษาผิดพลาดเล็กน้อย -> ดำตาย", q: "หมอรักษาผิดพลาด ตัดโซ่ความสัมพันธ์หรือไม่?", o:["ตัด (แดงรับผิดแค่พยายาม)", "ไม่ตัด (แดงรับผิดฐานฆ่า)"], c:1, r:"ความผิดพลาดเล็กน้อยของแพทย์ เป็นเรื่องคาดหมายได้ ไม่ตัดผล" },
+            { s: "แดงยิงดำบาดเจ็บสาหัส -> ญาติสงสารเลยถอดเครื่องช่วยหายใจ -> ดำตาย", q: "ญาติถอดเครื่องช่วยหายใจ ตัดโซ่หรือไม่?", o:["ตัด (Unpredictable)", "ไม่ตัด (Predictable)"], c:0, r:"ฎีกา 659/2532 ถือเป็นเหตุแทรกแซงที่คาดหมายไม่ได้ แดงรับผิดแค่พยายามฆ่า" },
+            { s: "แดงชกดำล้มหัวฟาด -> ดำไม่ยอมไปหาหมอ ปล่อยแผลเน่า -> ดำตาย", q: "การที่ดำไม่รักษาตัว ตัดโซ่หรือไม่?", o:["ตัด", "ไม่ตัด"], c:1, r:"การไม่ยอมรักษาตัว เป็นวิสัยปกติของคนทั่วไป คาดหมายได้ ผลยังเป็นของแดง" },
+            { s: "แดงแทงดำ -> ดำนั่งรถไป รพ. -> รถคว่ำตายกลางทาง", q: "รถคว่ำตาย ตัดโซ่หรือไม่?", o:["ตัด (เหตุบังเอิญ)", "ไม่ตัด (เป็นผลธรรมดา)"], c:0, r:"รถคว่ำเป็นอุบัติเหตุร้ายแรง คาดหมายไม่ได้ แดงรับผิดแค่ทำร้าย/พยายาม" },
+            { s: "แดงวางยาพิษดำ -> ดำกำลังจะตาย -> ขาวมาเห็นเลยยิงซ้ำให้ตายทันที", q: "การยิงของขาว ตัดโซ่ของแดงหรือไม่?", o:["ตัด (ขาวทำให้ตาย)", "ไม่ตัด (แดงทำไว้ก่อน)"], c:0, r:"ความตายเกิดจากกระสุนของขาว (ตัดตอน) แดงรับผิดแค่พยายามฆ่า" }
+        ];
+        let g3Idx=0;
+        function initG3() { g3Idx=0; loadG3(); }
+        function loadG3() {
+            if(g3Idx >= g3Data.length) { document.getElementById('game3').querySelector('.game-board').innerHTML="<h2>⚡ วิเคราะห์ครบถ้วน! ท่านคือผู้เชี่ยวชาญ</h2>"; return; }
+            const item = g3Data[g3Idx];
+            document.getElementById('g3-round').innerText = g3Idx+1;
+            document.getElementById('g3-scenario').innerText = item.s;
+            const opts = document.getElementById('g3-options'); opts.innerHTML = "";
+            item.o.forEach((txt, i) => {
+                let btn = document.createElement('button'); btn.className='quiz-btn'; btn.innerText=txt;
+                btn.onclick = () => checkG3(i, item.c, item.r);
+                opts.appendChild(btn);
+            });
+            document.getElementById('g3-feedback').style.display='none';
+            document.getElementById('g3-next').style.display='none';
+        }
+        function checkG3(idx, correct, reason) {
+            const fb = document.getElementById('g3-feedback'); fb.style.display='block';
+            const btns = document.getElementById('g3-options').querySelectorAll('button');
+            btns.forEach(b=>b.disabled=true);
+            if(idx===correct) {
+                fb.className='feedback-box correct'; fb.innerText="✅ ถูกต้อง! "+reason; btns[idx].classList.add('correct');
+            } else {
+                fb.className='feedback-box wrong'; fb.innerText="❌ ผิด! "+reason; btns[idx].classList.add('wrong');
+            }
+            document.getElementById('g3-next').style.display='block';
+        }
+        function nextG3() { g3Idx++; loadG3(); }
+
+        // --- GAME 4 DATA: DIKA SURVIVOR ---
+        const g4Data = [
+            { q: "ฎีกา 9413/2552: วิ่งไล่ทำร้าย -> โดดน้ำตาย ผลคือ?", o:["ผลโดยตรง (ผิดฆ่า/ทำร้ายจนตาย)", "เหตุแทรกแซง (ผิดแค่ทำร้าย)"], c:0 },
+            { q: "ฎีกา 1593/2542: ปาก้อนหินใส่หน้า -> ตกใจโรคหัวใจกำเริบตาย", o:["ผลโดยตรง (รับผิด)", "ผลผิดธรรมดา (ไม่รับผิด)"], c:0 },
+            { q: "ฎีกา 3742/2541: ผู้ตายเป็นโรคหัวใจ ถูกทำร้ายจนหัวใจวาย", o:["ผู้ตายสุขภาพไม่ดีเอง", "ความตายเป็นผลโดยตรงจากการทำร้าย"], c:1 },
+            { q: "วางเพลิง (ม.224) -> พลเมืองดีมาช่วยถูกไฟคลอกตาย", o:["จำเลยผิดวางเพลิงจนคนตาย", "จำเลยไม่ผิดในความตายนั้น"], c:1 },
+            { q: "ม.63 ผลที่ทำให้รับโทษหนักขึ้น ต้องเป็นผลแบบใด?", o:["ผลโดยตรงและผลธรรมดา", "ผลโดยตรงอย่างเดียว"], c:0 },
+            { q: "แอบใส่ยากดประสาทในกาแฟ -> ดื่มแล้วขับรถชนบาดเจ็บ", o:["ผิดฐานชิงทรัพย์เป็นเหตุให้เจ็บ", "ไม่ผิด เพราะเขาขับรถเอง"], c:0 },
+            { q: "แจ้งความเท็จทางจดหมาย แต่จดหมายหายกลางทาง", o:["ผิดสำเร็จแล้ว", "พยายามกระทำความผิด"], c:1 },
+            { q: "เบิกความเท็จ แต่ศาลไม่เชื่อ", o:["ผิดสำเร็จแล้ว (ไม่ต้องรอผล)", "พยายามเบิกความเท็จ"], c:0 },
+            { q: "ฎีกา 659/2532 ญาติถอดเครื่องช่วยหายใจ", o:["จำเลยผิดฆ่าคนตาย", "จำเลยผิดพยายามฆ่า"], c:1 },
+            { q: "ทฤษฎีเงื่อนไข เรียกว่า?", o:["Theory of Adequate Cause", "Theory of Conditional Factors"], c:1 }
+        ];
+        let g4Idx=0, g4Lives=3;
+        function initG4() { g4Idx=0; g4Lives=3; loadG4(); }
+        function loadG4() {
+            if(g4Lives<=0) { document.getElementById('game4').querySelector('.game-board').innerHTML="<h2 style='color:red'>💀 Game Over</h2><button class='next-btn' style='display:block' onclick='initG4()'>เริ่มใหม่</button>"; return; }
+            if(g4Idx>=g4Data.length) { document.getElementById('game4').querySelector('.game-board').innerHTML="<h2 style='color:green'>🏆 รอดชีวิต! คุณคือเทพกฎหมาย</h2>"; return; }
+            
+            document.getElementById('g4-lives').innerText = "❤️".repeat(g4Lives);
+            const item = g4Data[g4Idx];
+            document.getElementById('g4-question').innerText = `ข้อ ${g4Idx+1}: ${item.q}`;
+            const opts = document.getElementById('g4-options'); opts.innerHTML="";
+            item.o.forEach((txt, i) => {
+                let btn = document.createElement('button'); btn.className='quiz-btn'; btn.innerText=txt;
+                btn.onclick = () => checkG4(i, item.c);
+                opts.appendChild(btn);
+            });
+            document.getElementById('g4-feedback').style.display='none';
+            document.getElementById('g4-next').style.display='none';
+        }
+        function checkG4(idx, correct) {
+            const fb = document.getElementById('g4-feedback'); fb.style.display='block';
+            const btns = document.getElementById('g4-options').querySelectorAll('button');
+            btns.forEach(b=>b.disabled=true);
+            if(idx===correct) {
+                fb.className='feedback-box correct'; fb.innerText="✅ ถูกต้อง! รอดตัวไป"; btns[idx].classList.add('correct');
+            } else {
+                g4Lives--;
+                fb.className='feedback-box wrong'; fb.innerText="❌ ผิด! (เสีย 1 ชีวิต)"; btns[idx].classList.add('wrong');
+            }
+            document.getElementById('g4-next').style.display='block';
+        }
+        function nextG4() { g4Idx++; loadG4(); }
+
+    </script>
+</body>
+</html>
