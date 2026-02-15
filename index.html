@@ -30,20 +30,51 @@
 
         <div id="view-main" class="view active p-6 space-y-4">
             <div class="breadcrumb">หน้าหลัก</div>
-            <a href="game-the-act.html" class="menu-card w-full p-6 flex items-center gap-4 text-left no-underline">
-    <span class="text-2xl">🏗️</span>
-    <div>
-        <h3 class="font-bold text-slate-800">1. โครงสร้างความรับผิดในทางอาญา</h3>
-        <p class="text-xs text-slate-400">เรื่อง "การกระทำ" (The Act)</p>
-    </div>
-</a>
+            
+            <button onclick="showView('view-structure')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
+                <span class="text-2xl">🏗️</span>
+                <div>
+                    <h3 class="font-bold text-slate-800">1. โครงสร้างความรับผิดในทางอาญา</h3>
+                    <p class="text-xs text-slate-400">เลือกเล่น ๖ หัวข้อ (การกระทำ, องค์ประกอบ ฯลฯ)</p>
+                </div>
+            </button>
+
             <button onclick="showView('view-title-1')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
                 <span class="text-2xl">⚖️</span>
-                <div><h3 class="font-bold text-slate-800">ลักษณะ ๑ ความผิดทั่วไป</h3></div>
+                <div><h3 class="font-bold text-slate-800">2. ลักษณะ ๑ ความผิดทั่วไป</h3></div>
             </button>
+
             <button onclick="playGame('PETTY')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
                 <span class="text-2xl">📜</span>
-                <div><h3 class="font-bold text-slate-800">ลักษณะ ๒ ลหุโทษ</h3></div>
+                <div><h3 class="font-bold text-slate-800">3. ลักษณะ ๒ ลหุโทษ</h3></div>
+            </button>
+        </div>
+
+        <div id="view-structure" class="view p-6 space-y-3 overflow-y-auto">
+            <div class="breadcrumb"><button onclick="showView('view-main')" class="text-indigo-600">หน้าหลัก</button> > โครงสร้างความรับผิด</div>
+            
+            <a href="game-the-act.html" class="menu-card w-full p-4 flex items-center justify-between no-underline border-l-4 border-indigo-500">
+                <div>
+                    <span class="font-bold text-slate-800 text-sm block">1. การกระทำ</span>
+                    <span class="text-[10px] text-green-600">✅ พร้อมเล่น</span>
+                </div>
+                <span class="text-xl">🎬</span>
+            </a>
+
+            <button onclick="alert('กำลังก่อสร้าง...')" class="menu-card w-full p-4 flex items-center justify-between text-left opacity-70">
+                <span class="text-sm font-bold text-slate-700">2. องค์ประกอบภายนอก</span><span>🧱</span>
+            </button>
+            <button onclick="alert('กำลังก่อสร้าง...')" class="menu-card w-full p-4 flex items-center justify-between text-left opacity-70">
+                <span class="text-sm font-bold text-slate-700">3. องค์ประกอบภายใน</span><span>❤️</span>
+            </button>
+            <button onclick="alert('กำลังก่อสร้าง...')" class="menu-card w-full p-4 flex items-center justify-between text-left opacity-70">
+                <span class="text-sm font-bold text-slate-700">4. ความสัมพันธ์การกระทำ/ผล</span><span>🔗</span>
+            </button>
+            <button onclick="alert('กำลังก่อสร้าง...')" class="menu-card w-full p-4 flex items-center justify-between text-left opacity-70">
+                <span class="text-sm font-bold text-slate-700">5. ความผิดโดยเด็ดขาด</span><span>⚡</span>
+            </button>
+            <button onclick="alert('กำลังก่อสร้าง...')" class="menu-card w-full p-4 flex items-center justify-between text-left opacity-70">
+                <span class="text-sm font-bold text-slate-700">6. เหตุฉกรรจ์และผลฉกรรจ์</span><span>⚖️</span>
             </button>
         </div>
 
@@ -99,9 +130,7 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // ฟังก์ชันสั่งรันเกมตามรหัส ID
         function playGame(gameId) {
-            // หาข้อมูลเกมจากไฟล์ database.js
             const game = LawGamesDatabase.find(g => g.id === gameId);
             if (!game) {
                 alert("ขออภัย คดีนี้กำลังเตรียมการ... (ยังไม่มีข้อมูลใน database.js)");
@@ -151,5 +180,3 @@
     </script>
 </body>
 </html>
-
-
