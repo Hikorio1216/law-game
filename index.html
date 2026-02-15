@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Law Game - ณัฐพล บัวทอง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+        }
+
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #f3f4f6; 
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+            overscroll-behavior-y: contain; /* ป้องกัน Pull-to-refresh บน iOS/Android */
+            height: 100dvh; /* Dynamic Viewport Height */
+        }
+
+        .safe-pb { padding-bottom: var(--sab); }
+        .safe-pt { padding-top: var(--sat); }
+
+        /* Custom Scrollbar สำหรับ Windows/macOS */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col">
+    <div id="root" class="flex-1 flex flex-col overflow-hidden"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Trophy, ArrowLeft, Gavel, ChevronRight, Search, BookOpen } = lucide;
+
+        const gamesDatabase = [
+            {
+                id: "crim-001",
+                category: "กฎหมายอาญา",
+                title: "หลักการกระทำ (The Act)",
+                description: "คิด > ตกลงใจ > กระทำ (ครบ 3 อย่างถึงผิด)",
+                quizzes: [
+                    {
+                        question: "แดงนอนละเมอถีบภรรยาตกเตียงแขนหัก โดยที่แดงไม่เคยรู้มาก่อนว่าตนเองมีอาการนี้",
+                        options: [
+                            { text: "ผิดฐานทำร้ายร่างกาย", correct: false, reason: "ไม่ใช่! เพราะขาดองค์ประกอบ 'การกระทำ' (ไม่ได้คิดและตกลงใจ)" },
+                            { text: "ไม่ผิดเลย เพราะไม่มีการกระทำ", correct: true, reason: "ถูกต้อง! การละเมอโดยไม่รู้ตัว = ร่างกายเคลื่อนไหวแต่จิตใจไม่ได้สั่ง = ไม่มีการกระทำ" }
+                        ]
+                    },
+                    {
+                        question: "แดงรู้ตัวว่าเมาแล้วชอบละเมอชกต่อย แต่ก็ยังกินเหล้าแล้วไปนอนข้างดำ สุดท้ายละเมอต่อยดำจริงๆ",
+                        options: [
+                            { text: "ผิด! เพราะรู้ตัวล่วงหน้า (Free in Cause)", correct: true, reason: "เยี่ยมมาก! แม้ตอนต่อยจะไม่รู้ตัว แต่เหตุเกิดจากการกระทำตอนมีสติ (กินเหล้า+ไปนอนข้างเขา)" },
+                            { text: "ไม่ผิด เพราะตอนต่อยไม่รู้ตัว", correct: false, reason: "ผิด! กรณีนี้เข้าข่ายทฤษฎี Free in Cause (การกระทำโดยอิสระในขณะเป็นต้นเหตุ)" }
+                        ]
+                    },
+                    {
+                        question: "Lifeguard เห็นคนจมน้ำแล้วยืนมองเฉยๆ เพราะหมั่นไส้ (อยากให้ตาย) จนเขาตายจริงๆ",
+                        options: [
+                            { text: "ผิดฐานละเว้น (ลหุโทษ)", correct: false, reason: "เบาไป! Lifeguard มีหน้าที่เฉพาะ การนิ่งเฉยถือเป็นการฆ่า" },
+                            { text: "ผิดฐานฆ่าคนตายโดยเจตนา (งดเว้น)", correct: true, reason: "ถูกต้อง! นี่คือการ 'งดเว้น' เพราะเขามีหน้าที่ป้องกันผล การไม่ทำ = การลงมือฆ่า" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const GameEngine = ({ gameData, onBack }) => {
+            const [currentQ, setCurrentQ] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showAns, setShowAns] = useState(false);
+            const [finished, setFinished] = useState(false);
+
+            const handleAnswer = (isCorrect) => {
+                setShowAns(true);
+                if (isCorrect) setScore(score + 1);
+            };
+
+            const next = () => {
+                if (currentQ < gameData.quizzes.length - 1) {
+                    setCurrentQ(currentQ + 1);
+                    setShowAns(false);
+                } else {
+                    setFinished(true);
+                }
+            };
+
+            if (finished) return (
+                <div className="flex flex-col items-center justify-center h-full p-8 bg-white text-center safe-pb">
+                    <Trophy size={80} className="text-yellow-500 mb-6 animate-bounce" />
+                    <h2 className="text-3xl font-bold text-gray-800 mb-2">จบคดีความ!</h2>
+                    <p className="text-xl text-gray-600 mb-8">คุณทำได้ {score} / {gameData.quizzes.length} คะแนน</p>
+                    <button onClick={onBack} className="bg-indigo-600 text-white px-10 py-4 rounded-full font-bold shadow-lg active:scale-95 transition-transform">กลับหน้าหลัก</button>
+                </div>
+            );
+
+            const quiz = gameData.quizzes[currentQ];
+
+            return (
+                <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
+                    <div className="bg-white p-4 pt-10 shadow-sm flex items-center gap-3 sticky top-0 z-10 safe-pt">
+                        <button onClick={onBack} className="p-2 bg-gray-100 rounded-full active:bg-gray-200"><ArrowLeft size={20}/></button>
+                        <div>
+                            <h2 className="font-bold text-gray-800 leading-tight">{gameData.title}</h2>
+                            <p className="text-xs text-gray-500">ข้อที่ {currentQ + 1}/{gameData.quizzes.length}</p>
+                        </div>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-6 pb-24">
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                            <p className="text-lg font-medium text-gray-800 leading-relaxed">{quiz.question}</p>
+                        </div>
+
+                        {!showAns ? (
+                            <div className="space-y-4">
+                                {quiz.options.map((opt, i) => (
+                                    <button key={i} onClick={() => handleAnswer(opt.correct)} 
+                                        className="w-full text-left p-5 rounded-xl border-2 border-transparent bg-white shadow-sm hover:border-indigo-200 active:bg-indigo-50 transition-all font-medium text-gray-700">
+                                        {opt.text}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-6 rounded-2xl border-2 border-green-200 bg-green-50 animate-fadeIn">
+                                <div className="font-bold text-green-800 mb-3 flex items-center gap-2">
+                                    <Gavel size={20}/> คำตัดสิน:
+                                </div>
+                                <p className="text-gray-700 mb-6 leading-relaxed">{quiz.options.find(o=>o.correct).reason}</p>
+                                <button onClick={next} className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold shadow-lg active:scale-[0.98] transition-all">
+                                    {currentQ < gameData.quizzes.length - 1 ? "ไปต่อ ➡️" : "ดูผลลัพธ์"}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [selectedGame, setSelectedGame] = useState(null);
+            
+            return (
+                <div className="flex flex-col h-full">
+                    {selectedGame ? (
+                        <GameEngine gameData={selectedGame} onBack={() => setSelectedGame(null)} />
+                    ) : (
+                        <div className="flex flex-col h-full bg-gray-50">
+                            <div className="bg-indigo-900 text-white p-8 pt-14 rounded-b-[40px] shadow-xl relative overflow-hidden safe-pt">
+                                <div className="relative z-10">
+                                    <span className="bg-indigo-500/30 text-indigo-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-widest">Law Learning</span>
+                                    <h1 className="text-4xl font-extrabold mt-3 mb-1">Law Game</h1>
+                                    <p className="text-indigo-200 text-sm opacity-80">โดย ณัฐพล บัวทอง</p>
+                                </div>
+                                <Gavel className="absolute right-[-20px] bottom-[-20px] text-white opacity-10 rotate-12" size={180} />
+                            </div>
+
+                            <div className="flex-1 p-6 overflow-y-auto">
+                                <h2 className="text-gray-400 font-bold text-xs mb-4 uppercase tracking-wider flex items-center gap-2">
+                                    <BookOpen size={14}/> คดีที่พร้อมให้เล่น ({gamesDatabase.length})
+                                </h2>
+                                <div className="space-y-4 pb-10">
+                                    {gamesDatabase.map(game => (
+                                        <button key={game.id} onClick={() => setSelectedGame(game)} 
+                                            className="w-full bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all active:scale-[0.97] text-left group">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-2xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-all">⚖️</div>
+                                                <div>
+                                                    <h3 className="font-bold text-gray-800 text-lg">{game.title}</h3>
+                                                    <p className="text-sm text-gray-400 line-clamp-1">{game.description}</p>
+                                                </div>
+                                            </div>
+                                            <ChevronRight className="text-gray-300 group-hover:text-indigo-600 transition-colors" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
