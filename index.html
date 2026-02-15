@@ -9,142 +9,74 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap');
         
-        body { 
-            font-family: 'Prompt', sans-serif; 
-            background-color: #f8fafc;
-            -webkit-tap-highlight-color: transparent; 
-        }
-
-        .view { display: none; animation: fadeIn 0.3s ease-out; }
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        .view { display: none; animation: fadeIn 0.3s ease-out; height: 100%; flex-direction: column; }
         .view.active { display: flex; }
-
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        .menu-card {
-            background: white;
-            border-radius: 1.5rem;
-            transition: all 0.2s ease;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .menu-card { background: white; border-radius: 1.5rem; transition: all 0.2s ease; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .menu-card:active { transform: scale(0.97); background-color: #f1f5f9; }
-        
         .breadcrumb { font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen">
 
-    <div id="app-container" class="w-full max-w-lg bg-white min-h-screen shadow-2xl flex flex-col relative">
+    <div id="app-container" class="w-full max-w-lg bg-white min-h-screen shadow-2xl flex flex-col relative overflow-hidden">
         
         <header class="p-6 border-b border-slate-50 sticky top-0 bg-white/80 backdrop-blur-md z-50">
-            <h1 class="text-lg font-bold text-slate-800 leading-tight">สนุกกับประมวลกฎหมายอาญา : ภาค ๑</h1>
+            <h1 class="text-lg font-bold text-slate-800 leading-tight">สนุกกับประมวลกฎหมายอาญา : ภาค ๑ บทบัญญัติทั่วไป</h1>
             <p class="text-[10px] text-indigo-600 font-medium uppercase tracking-widest mt-1">โดย Nattapon Buathong LLB66@STOU</p>
         </header>
 
-        <div id="view-main" class="view active flex-col p-6 space-y-4">
+        <div id="view-main" class="view active p-6 space-y-4">
             <div class="breadcrumb">หน้าหลัก</div>
-            
-            <button onclick="showView('view-structure')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
+            <button onclick="playGame('STRUCTURE')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
                 <span class="text-2xl">🏗️</span>
-                <div>
-                    <h3 class="font-bold text-slate-800">โครงสร้างความรับผิดในทางอาญา</h3>
-                    <p class="text-xs text-slate-400 italic">รอใส่เกม...</p>
-                </div>
+                <div><h3 class="font-bold text-slate-800">1. โครงสร้างความรับผิดในทางอาญา</h3></div>
             </button>
-
             <button onclick="showView('view-title-1')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
                 <span class="text-2xl">⚖️</span>
-                <div>
-                    <h3 class="font-bold text-slate-800">ลักษณะ ๑ บทบัญญัติที่ใช้แก่ความผิดทั่วไป</h3>
-                    <p class="text-xs text-slate-400">หมวด ๑ - หมวด ๙</p>
-                </div>
+                <div><h3 class="font-bold text-slate-800">2. ลักษณะ ๑ ความผิดทั่วไป</h3></div>
             </button>
-
-            <button onclick="alert('รอใส่เกมส์...')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
+            <button onclick="playGame('PETTY')" class="menu-card w-full p-6 flex items-center gap-4 text-left">
                 <span class="text-2xl">📜</span>
-                <div>
-                    <h3 class="font-bold text-slate-800">ลักษณะ ๒ บทบัญญัติที่ใช้แก่ความผิดลหุโทษ</h3>
-                    <p class="text-xs text-slate-400 italic">รอใส่เกม...</p>
-                </div>
+                <div><h3 class="font-bold text-slate-800">3. ลักษณะ ๒ ลหุโทษ</h3></div>
             </button>
         </div>
 
-        <div id="view-title-1" class="view flex-col p-6 space-y-3 overflow-y-auto">
-            <div class="flex items-center gap-2 mb-2">
-                <button onclick="showView('view-main')" class="text-indigo-600 text-sm font-bold">⬅️ กลับ</button>
-                <div class="breadcrumb mb-0">หน้าหลัก > ลักษณะ ๑</div>
-            </div>
-
-            <button onclick="alert('หมวด ๑: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๑ บทนิยาม</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๒: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๒ การใช้กฎหมายอาญา</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="showView('view-chapter-3')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700 border-l-4 border-indigo-500">
-                <span>หมวด ๓ โทษและวิธีเพื่อความปลอดภัย</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๔: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๔ ความรับผิดในทางอาญา</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๕: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๕ การพยายามกระทำความผิด</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๖: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๖ ตัวการและผู้สนับสนุน</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๗: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๗ การกระทำความผิดหลายบทหรือหลายกระทง</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๘: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๘ การกระทำความผิดอีก</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
-            <button onclick="alert('หมวด ๙: รอใส่เกม')" class="menu-card w-full p-4 flex items-center justify-between text-sm font-medium text-slate-700">
-                <span>หมวด ๙ อายุความ</span>
-                <span class="text-slate-300">➡️</span>
-            </button>
+        <div id="view-title-1" class="view p-6 space-y-3 overflow-y-auto">
+            <div class="breadcrumb"><button onclick="showView('view-main')" class="text-indigo-600">หน้าหลัก</button> > ลักษณะ ๑</div>
+            <button onclick="playGame('CH1')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๑ บทนิยาม</span><span>➡️</span></button>
+            <button onclick="playGame('CH2')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๒ การใช้กฎหมายอาญา</span><span>➡️</span></button>
+            <button onclick="showView('view-chapter-3')" class="menu-card w-full p-4 flex justify-between border-l-4 border-indigo-500"><span>หมวด ๓ โทษและวิธีเพื่อความปลอดภัย</span><span>➡️</span></button>
+            <button onclick="playGame('CH4')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๔ ความรับผิดในทางอาญา</span><span>➡️</span></button>
+            <button onclick="playGame('CH5')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๕ การพยายามกระทำความผิด</span><span>➡️</span></button>
+            <button onclick="playGame('CH6')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๖ ตัวการและผู้สนับสนุน</span><span>➡️</span></button>
+            <button onclick="playGame('CH7')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๗ หลายบทหรือหลายกระทง</span><span>➡️</span></button>
+            <button onclick="playGame('CH8')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๘ การกระทำความผิดอีก</span><span>➡️</span></button>
+            <button onclick="playGame('CH9')" class="menu-card w-full p-4 flex justify-between"><span>หมวด ๙ อายุความ</span><span>➡️</span></button>
         </div>
 
-        <div id="view-chapter-3" class="view flex-col p-6 space-y-4">
-            <div class="flex items-center gap-2 mb-2">
-                <button onclick="showView('view-title-1')" class="text-indigo-600 text-sm font-bold">⬅️ กลับ</button>
-                <div class="breadcrumb mb-0">ลักษณะ ๑ > หมวด ๓</div>
+        <div id="view-chapter-3" class="view p-6 space-y-4">
+            <div class="breadcrumb"><button onclick="showView('view-title-1')" class="text-indigo-600">ลักษณะ ๑</button> > หมวด ๓</div>
+            <button onclick="playGame('CH3-S1')" class="menu-card w-full p-5 border-l-4 border-rose-400"><b>ส่วนที่ ๑ โทษ</b></button>
+            <button onclick="playGame('CH3-S2')" class="menu-card w-full p-5 border-l-4 border-emerald-400"><b>ส่วนที่ ๒ วิธีการเพื่อความปลอดภัย</b></button>
+            <button onclick="playGame('CH3-S3')" class="menu-card w-full p-5 border-l-4 border-amber-400"><b>ส่วนที่ ๓ วิธีเพิ่ม/ลด/รอการลงโทษ</b></button>
+        </div>
+
+        <div id="view-game" class="view p-6 bg-slate-50">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showView('view-main')" class="text-xs text-slate-400">❌ ออกจากเกม</button>
+                <div id="game-progress" class="text-xs font-bold text-indigo-600">ข้อที่ 1/1</div>
             </div>
-
-            <button onclick="alert('ส่วนที่ ๑: รอใส่เกม')" class="menu-card w-full p-5 flex items-center gap-4 text-left border-l-4 border-rose-400">
-                <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center text-lg">⚖️</div>
-                <div>
-                    <h3 class="font-bold text-slate-800 text-sm">ส่วนที่ ๑ โทษ</h3>
-                    <p class="text-[10px] text-slate-400">มาตรา ๑๘ - ๓๘</p>
-                </div>
-            </button>
-
-            <button onclick="alert('ส่วนที่ ๒: รอใส่เกม')" class="menu-card w-full p-5 flex items-center gap-4 text-left border-l-4 border-emerald-400">
-                <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-lg">🛡️</div>
-                <div>
-                    <h3 class="font-bold text-slate-800 text-sm">ส่วนที่ ๒ วิธีการเพื่อความปลอดภัย</h3>
-                    <p class="text-[10px] text-slate-400">มาตรา ๓๙ - ๕๐</p>
-                </div>
-            </button>
-
-            <button onclick="alert('ส่วนที่ ๓: รอใส่เกม')" class="menu-card w-full p-5 flex items-center gap-4 text-left border-l-4 border-amber-400">
-                <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-lg">⏳</div>
-                <div>
-                    <h3 class="font-bold text-slate-800 text-sm leading-tight">ส่วนที่ ๓ วิธีเพิ่มโทษ ลดโทษ และการรอการลงโทษ</h3>
-                    <p class="text-[10px] text-slate-400">มาตรา ๕๑ - ๕๘</p>
-                </div>
-            </button>
+            <div class="bg-white p-6 rounded-3xl shadow-sm mb-6 flex-1">
+                <p id="question-text" class="text-lg font-bold text-slate-800"></p>
+                <div id="options-container" class="mt-8 space-y-3"></div>
+            </div>
+            <div id="feedback-box" class="hidden p-6 bg-slate-900 rounded-3xl text-white animate-fade-in mb-6">
+                <p id="feedback-text" class="text-sm font-light mb-4"></p>
+                <button id="next-btn" class="w-full bg-white text-slate-900 py-3 rounded-2xl font-bold">ไปต่อ ➡️</button>
+            </div>
         </div>
 
         <footer class="mt-auto p-6 bg-slate-50 text-center border-t border-slate-100">
@@ -152,19 +84,67 @@
         </footer>
     </div>
 
+    <script src="database.js"></script>
+
     <script>
-        // ฟังก์ชันสลับหน้าจอ (Navigation)
-        function showView(viewId) {
-            // ซ่อนทุกหน้า
-            document.querySelectorAll('.view').forEach(view => {
-                view.classList.remove('active');
+        let currentGameData = null;
+        let currentIdx = 0;
+        let score = 0;
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // ฟังก์ชันสั่งรันเกมตามรหัส ID
+        function playGame(gameId) {
+            // หาข้อมูลเกมจากไฟล์ database.js
+            const game = LawGamesDatabase.find(g => g.id === gameId);
+            if (!game) {
+                alert("ขออภัย คดีนี้กำลังเตรียมการ... (ยังไม่มีข้อมูลใน database.js)");
+                return;
+            }
+            currentGameData = game;
+            currentIdx = 0;
+            score = 0;
+            showView('view-game');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const quiz = currentGameData.quizzes[currentIdx];
+            document.getElementById('game-progress').innerText = `คดี: ${currentGameData.title} (${currentIdx + 1}/${currentGameData.quizzes.length})`;
+            document.getElementById('question-text').innerText = quiz.q;
+            document.getElementById('feedback-box').classList.add('hidden');
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            quiz.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border border-slate-100 hover:bg-indigo-50 active:scale-95 transition-all text-sm";
+                btn.innerText = opt.t;
+                btn.onclick = () => checkAns(i);
+                container.appendChild(btn);
             });
-            // แสดงหน้าที่เลือก
-            document.getElementById(viewId).classList.add('active');
-            // เลื่อนขึ้นไปบนสุด
-            window.scrollTo(0, 0);
+        }
+
+        function checkAns(idx) {
+            const quiz = currentGameData.quizzes[currentIdx];
+            const isCorrect = idx === quiz.ans;
+            if (isCorrect) score++;
+            
+            document.getElementById('feedback-text').innerText = quiz.reason;
+            document.getElementById('feedback-box').classList.remove('hidden');
+            document.getElementById('next-btn').onclick = () => {
+                currentIdx++;
+                if (currentIdx < currentGameData.quizzes.length) {
+                    renderQuestion();
+                } else {
+                    alert(`จบคดี! คุณทำคะแนนได้ ${score} / ${currentGameData.quizzes.length}`);
+                    showView('view-main');
+                }
+            };
         }
     </script>
 </body>
 </html>
-
