@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กฎหมายอาญา: เรื่อง "การกระทำ" (The Act)</title>
+    <title>Law Academy: เรื่อง "การกระทำ"</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,6 +13,7 @@
             --accent: #6366f1; /* Indigo */
             --success: #10b981;
             --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
@@ -25,295 +26,420 @@
             flex-direction: column;
             align-items: center;
             line-height: 1.6;
-            position: relative; /* เพิ่มเพื่อให้อ้างอิงตำแหน่งปุ่มกลับได้ */
-        }
-
-        /* ปุ่มกลับหน้าหลัก (แต่งเพิ่มให้สวยงาม) */
-        .back-link {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 1rem;
-            background: rgba(255,255,255,0.1);
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            z-index: 100;
-        }
-        .back-link:hover {
-            background: var(--accent);
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
-            margin-top: 40px; /* เพิ่มระยะห่างด้านบนไม่ให้ชนปุ่มกลับ */
         }
 
-        h1, h2 {
+        h1, h2, h3 {
             text-align: center;
             color: white;
             font-weight: 600;
         }
 
-        /* Study Section */
+        /* --- Tabs --- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 12px;
+        }
+        .tab-btn {
+            border: none;
+            padding: 10px 15px;
+            background: transparent;
+            color: var(--text-main);
+            opacity: 0.6;
+            cursor: pointer;
+            border-radius: 8px;
+            font-family: 'Prompt', sans-serif;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            opacity: 1;
+            background: var(--accent);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+            font-weight: 600;
+        }
+
+        /* --- Content Sections --- */
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Study Cards --- */
         .study-card {
             background-color: var(--card-bg);
-            padding: 25px;
+            padding: 20px;
             border-radius: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid #334155;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
-        .highlight {
+        details summary {
+            cursor: pointer;
             font-weight: 600;
-            color: #818cf8;
-            background-color: rgba(99, 102, 241, 0.1);
-            padding: 2px 8px;
-            border-radius: 6px;
+            color: var(--accent);
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        details summary::after { content: '▼'; font-size: 0.8em; transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .study-content { padding: 15px; border-top: 1px solid #334155; margin-top: 10px; }
+        
+        .highlight { color: #818cf8; font-weight: bold; background: rgba(99, 102, 241, 0.1); padding: 2px 6px; border-radius: 4px; }
+        .table-custom { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table-custom th, .table-custom td { border: 1px solid #475569; padding: 10px; text-align: left; font-size: 0.9rem; }
+        .table-custom th { background: rgba(99, 102, 241, 0.2); }
 
-        /* Game Section */
+        /* --- Game Global --- */
         .game-area {
             background-color: var(--card-bg);
-            padding: 35px;
+            padding: 30px;
             border-radius: 20px;
-            text-align: center;
             border: 1px solid #334155;
+            min-height: 400px;
+            position: relative;
+        }
+        .score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--accent);
         }
 
+        /* --- Game 1: Matching --- */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .match-item {
+            background: #0f172a;
+            padding: 15px;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+        .match-item:hover { border-color: var(--accent); }
+        .match-item.selected { background: var(--accent); color: white; border-color: var(--accent); }
+        .match-item.matched { background: var(--success); border-color: var(--success); opacity: 0.5; pointer-events: none; }
+
+        /* --- Game 2: Quiz --- */
         .scenario-box {
             font-size: 1.1rem;
-            margin-bottom: 25px;
+            margin: 40px 0 25px;
             background: #0f172a;
             padding: 25px;
             border-radius: 12px;
             border-left: 4px solid var(--accent);
         }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        button {
+        .options-grid { display: grid; gap: 12px; }
+        .quiz-btn {
             background-color: rgba(255,255,255,0.03);
             border: 1px solid #334155;
             color: var(--text-main);
-            padding: 16px;
-            font-size: 0.95rem;
+            padding: 15px;
             cursor: pointer;
             border-radius: 12px;
-            transition: all 0.2s ease;
-            font-family: 'Prompt', sans-serif;
-        }
-
-        button:hover:not(:disabled) {
-            background-color: var(--accent);
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-            background: rgba(255,255,255,0.05);
-            padding: 5px;
-            border-radius: 12px;
-        }
-        .tab-btn {
-            border: none;
-            padding: 10px 20px;
-            background: transparent;
-            color: var(--text-main);
-            opacity: 0.5;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: 400;
-        }
-        .tab-btn.active {
-            opacity: 1;
-            background: var(--card-bg);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            font-weight: 600;
-        }
-
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 12px;
-            display: none;
+            transition: all 0.2s;
             text-align: left;
-            font-size: 0.9rem;
         }
-        .feedback.correct { border: 1px solid var(--success); color: var(--success); background: rgba(16, 185, 129, 0.1); }
-        .feedback.wrong { border: 1px solid var(--error); color: var(--error); background: rgba(239, 68, 68, 0.1); }
+        .quiz-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
 
-        .next-btn {
-            background-color: white;
-            color: var(--bg-color);
-            border: none;
+        /* --- Game 3: Detective Analysis --- */
+        .detective-card {
+            text-align: left;
             margin-top: 20px;
-            width: 100%;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .step-dot {
+            width: 30px; height: 30px; background: #334155; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        }
+        .step-dot.active { background: var(--warning); color: black; font-weight: bold; }
+        .step-dot.completed { background: var(--success); color: white; }
+
+        /* --- Utility --- */
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
+        .feedback.correct { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #4ade80; }
+        .feedback.wrong { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #f87171; }
+        
+        button.next-btn {
+            background: var(--text-main); color: var(--bg-color); border: none;
+            padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;
+            margin-top: 20px; display: none;
         }
 
-        .hidden { display: none; }
+        @media (max-width: 600px) {
+            .matching-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-link">
-        ⬅️ กลับหน้าหลัก
-    </a>
-
     <div class="container">
         <h1>Criminal Law Academy</h1>
-        
+        <p style="text-align: center; opacity: 0.7;">กฎหมายอาญา ภาคทั่วไป: การกระทำ (The Act)</p>
+
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('study', event)">📖 สรุปหลักกฎหมาย</button>
-            <button class="tab-btn" onclick="switchTab('game', event)">⚖️ วินิจฉัยคดี (Game)</button>
+            <button class="tab-btn active" onclick="switchTab('study')">📖 สรุปเนื้อหา</button>
+            <button class="tab-btn" onclick="switchTab('game1')">🧩 จับคู่กฎหมาย</button>
+            <button class="tab-btn" onclick="switchTab('game2')">⚖️ วินิจฉัยคดี</button>
+            <button class="tab-btn" onclick="switchTab('game3')">🕵️ คิดแบบนักสืบ</button>
         </div>
 
-        <div id="study-section">
-            <div class="study-card">
-                <h2>การกระทำ (The Act)</h2>
-                <p>การกระทำในทางอาญาต้องประกอบด้วยขั้นตอน: <span class="highlight">คิด</span> → <span class="highlight">ตกลงใจ</span> → <span class="highlight">กระทำ</span></p>
-                <p>หากขาดความรู้สำนึกภายใต้บังคับของจิตใจ (เช่น ละเมอ, Reflex, ถูกจับมือเซ็น) จะถือว่า <strong>"ไม่มีการกระทำ"</strong> และไม่ต้องรับผิดทางอาญา</p>
-            </div>
+        <div id="study" class="section active">
             
             <div class="study-card">
-                <h2>งดเว้น vs ละเว้น</h2>
-                <ul>
-                    <li><span class="highlight">งดเว้น:</span> มีหน้าที่เฉพาะเพื่อป้องกันผล (เช่น พ่อแม่ดูแลลูก) แล้วไม่ทำ = ผิดฐานฆ่า/ทำร้าย</li>
-                    <li><span class="highlight">ละเว้น:</span> มีหน้าที่พลเมืองทั่วไป (เช่น เห็นคนตกน้ำแต่ไม่ใช่ญาติ) แล้วไม่ช่วย = ผิดลหุโทษ (ม.374)</li>
-                </ul>
+                <details open>
+                    <summary>1. นิยามและองค์ประกอบของการกระทำ</summary>
+                    <div class="study-content">
+                        <p>ในทางอาญา "การกระทำ" ต้องอยู่ภายใต้บังคับของจิตใจ (Consciousness) ประกอบด้วย 3 ขั้นตอน:</p>
+                        <ol>
+                            <li><span class="highlight">คิด (Thinking)</span></li>
+                            <li><span class="highlight">ตกลงใจ (Decision)</span></li>
+                            <li><span class="highlight">กระทำ (Execution)</span> - แสดงออกภายนอก</li>
+                        </ol>
+                        <p>⚠️ <strong>ข้อยกเว้น (ไม่ถือว่ามีการกระทำ):</strong> ละเมอ, สะดุ้ง (Reflex), ถูกจับมือเซ็นชื่อ, เป็นลมบ้าหมู</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>2. งดเว้น vs ละเว้น (สำคัญมาก!)</summary>
+                    <div class="study-content">
+                        <table class="table-custom">
+                            <tr>
+                                <th>ประเด็น</th>
+                                <th>งดเว้น (Commission by Omission)</th>
+                                <th>ละเว้น (Simple Omission)</th>
+                            </tr>
+                            <tr>
+                                <td><strong>หน้าที่</strong></td>
+                                <td>มีหน้าที่ <strong>"ป้องกันผล"</strong> โดยเฉพาะ</td>
+                                <td>มีหน้าที่ <strong>"พลเมืองทั่วไป"</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>ตัวอย่าง</strong></td>
+                                <td>Lifeguard ไม่ช่วยคนจมน้ำ, พ่อแม่ไม่เลี้ยงลูก</td>
+                                <td>คนเดินผ่านเห็นคนตกน้ำแล้วไม่ช่วย</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ความผิด</strong></td>
+                                <td>เหมือนลงมือทำเอง (เจตนาฆ่า/ทำร้าย)</td>
+                                <td>ลหุโทษ (ม.374) จำคุกไม่เกิน 1 เดือน</td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+            </div>
+
+            <div class="study-card">
+                <details>
+                    <summary>3. Free in Cause (การกระทำโดยอิสระขณะเป็นต้นเหตุ)</summary>
+                    <div class="study-content">
+                        <p><strong>หลักการ:</strong> แม้ขณะทำผิดจะ "ขาดสติ" (เช่น เมา, ละเมอ) แต่ถ้า <strong>"รู้ตัวล่วงหน้า"</strong> ว่าตนมีอาการนี้แล้วยังเอาตัวไปเสี่ยง ถือว่า <span class="highlight">มีความผิด</span></p>
+                        <p><em>ตัวอย่าง:</em> รู้ว่าเมาแล้วชอบชกต่อย แต่ก็ยังดื่มจนเมาแล้วไปต่อยเขา = ผิด</p>
+                    </div>
+                </details>
             </div>
         </div>
 
-        <div id="game-section" class="hidden">
+        <div id="game1" class="section">
             <div class="game-area">
-                <div style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 10px;">
-                    คะแนน: <span id="score">0</span> / <span id="total">0</span>
-                </div>
-                
+                <h2>🧩 จับคู่หลักกฎหมายให้ถูกต้อง</h2>
+                <p style="text-align:center; font-size:0.9rem;">คลิกที่โจทย์ฝั่งซ้าย แล้วคลิกคำตอบฝั่งขวา</p>
+                <div class="matching-container" id="match-area">
+                    </div>
+                <div id="match-feedback" class="feedback"></div>
+                <button onclick="initMatchingGame()" style="margin-top:20px; padding:10px;">รีเซ็ตเกม</button>
+            </div>
+        </div>
+
+        <div id="game2" class="section">
+            <div class="game-area">
+                <div class="score-display">Score: <span id="quiz-score">0</span></div>
+                <h2>⚖️ ห้องพิจารณาคดี</h2>
                 <div id="quiz-container">
                     <div class="scenario-box" id="question-text">Loading...</div>
                     <div class="options-grid" id="options-area"></div>
                 </div>
-
-                <div id="feedback" class="feedback"></div>
-                <button id="next-btn" class="next-btn" onclick="nextQuestion()">คดีถัดไป ➜</button>
+                <div id="quiz-feedback" class="feedback"></div>
+                <button id="quiz-next-btn" class="next-btn" onclick="nextQuizQuestion()">ข้อต่อไป ➜</button>
             </div>
         </div>
+
+        <div id="game3" class="section">
+            <div class="game-area">
+                <h2>🕵️ คดีปริศนา: ชายขี้เซากับมีดปลายแหลม</h2>
+                <p>จงวิเคราะห์คดีตามลำดับขั้นเพื่อหาคำตอบที่แท้จริง</p>
+                
+                <div class="step-indicator">
+                    <div class="step-dot active" id="dot-1">1</div>
+                    <div class="step-dot" id="dot-2">2</div>
+                    <div class="step-dot" id="dot-3">3</div>
+                </div>
+
+                <div id="detective-content" class="detective-card">
+                    </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const questions = [
-            {
-                scenario: "นายแดงฝันร้ายและนอนละเมอ ถีบภรรยาตกเตียงจนได้รับบาดเจ็บ โดยที่นายแดงไม่รู้ตัวเลย",
-                options: [
-                    "ผิดฐานทำร้ายร่างกายโดยเจตนา",
-                    "ผิดฐานกระทำโดยประมาท",
-                    "ไม่มีความผิด เพราะไม่มีการกระทำ (ขาดความรู้สำนึก)",
-                    "ผิดฐานงดเว้นการระมัดระวัง"
-                ],
-                correct: 2,
-                explanation: "การละเมอถือว่าขาด 'ความรู้สำนึก' (Consciousness) จึงถือว่า 'ไม่มีการกระทำ' ในทางอาญา (เทียบฎีกาที่ 259/2562)"
-            },
-            {
-                scenario: "นายแดง เป็น Lifeguard ประจำสระว่ายน้ำ เห็นนายดำ (ศัตรู) กำลังจมน้ำ แดงแกล้งทำเป็นไม่เห็น ปล่อยให้ดำจมน้ำตาย",
-                options: [
-                    "ผิดฐานละเว้น (ม.374) โทษจำคุกไม่เกิน 1 เดือน",
-                    "ผิดฐานฆ่าผู้อื่นโดยเจตนา (โดยการงดเว้น)",
-                    "ผิดฐานฆ่าผู้อื่นโดยไตร่ตรองไว้ก่อน",
-                    "ไม่มีความผิด เพราะแดงไม่ได้เป็นคนกดหัวดำจมน้ำ"
-                ],
-                correct: 1,
-                explanation: "Lifeguard มี 'หน้าที่โดยเฉพาะเพื่อป้องกันผล' การนิ่งเฉยถือเป็นการงดเว้น มีค่าเท่ากับการลงมือฆ่าเอง"
-            }
+        // --- GLOBAL SETUP ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(tabId === 'game1') initMatchingGame();
+            if(tabId === 'game2') initQuizGame();
+            if(tabId === 'game3') initDetectiveGame();
+        }
+
+        // --- GAME 1: MATCHING LOGIC ---
+        const matchData = [
+            { id: 1, left: "ละเมอถีบภรรยา", right: "ไม่มีการกระทำ (No Action)" },
+            { id: 2, left: "Lifeguard ปล่อยคนจมน้ำตาย", right: "งดเว้น (Commission by Omission)" },
+            { id: 3, left: "คนเดินผ่านเห็นคนจมน้ำไม่ช่วย", right: "ละเว้น (Simple Omission - ม.374)" },
+            { id: 4, left: "รู้ว่าเมาแล้วดุ แต่ยังดื่มแล้วไปต่อยคน", right: "Free in Cause (รับผิด)" }
         ];
 
-        let currentQuestion = 0;
-        let score = 0;
+        let selectedLeft = null;
+        let matchedCount = 0;
 
-        function switchTab(tab, event) {
-            document.getElementById('study-section').classList.add('hidden');
-            document.getElementById('game-section').classList.add('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            
-            if(tab === 'study') {
-                document.getElementById('study-section').classList.remove('hidden');
-            } else {
-                document.getElementById('game-section').classList.remove('hidden');
-                loadQuestion();
-            }
-            event.target.classList.add('active');
-        }
+        function initMatchingGame() {
+            matchedCount = 0;
+            const container = document.getElementById('match-area');
+            container.innerHTML = '';
+            document.getElementById('match-feedback').style.display = 'none';
 
-        function loadQuestion() {
-            if (currentQuestion >= questions.length) {
-                showFinalScore();
-                return;
-            }
-            const q = questions[currentQuestion];
-            document.getElementById('question-text').innerText = q.scenario;
-            document.getElementById('score').innerText = score;
-            document.getElementById('total').innerText = questions.length;
+            // Shuffle Arrays
+            const leftItems = [...matchData].sort(() => Math.random() - 0.5);
+            const rightItems = [...matchData].sort(() => Math.random() - 0.5);
 
-            const optionsDiv = document.getElementById('options-area');
-            optionsDiv.innerHTML = '';
-
-            q.options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index);
-                optionsDiv.appendChild(btn);
+            // Render Left Column
+            const leftDiv = document.createElement('div');
+            leftDiv.style.display = 'grid'; leftDiv.style.gap = '10px';
+            leftItems.forEach(item => {
+                const btn = document.createElement('div');
+                btn.className = 'match-item';
+                btn.innerText = item.left;
+                btn.dataset.id = item.id;
+                btn.dataset.side = 'left';
+                btn.onclick = handleMatchClick;
+                leftDiv.appendChild(btn);
             });
 
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
+            // Render Right Column
+            const rightDiv = document.createElement('div');
+            rightDiv.style.display = 'grid'; rightDiv.style.gap = '10px';
+            rightItems.forEach(item => {
+                const btn = document.createElement('div');
+                btn.className = 'match-item';
+                btn.innerText = item.right;
+                btn.dataset.id = item.id;
+                btn.dataset.side = 'right';
+                btn.onclick = handleMatchClick;
+                rightDiv.appendChild(btn);
+            });
+
+            container.appendChild(leftDiv);
+            container.appendChild(rightDiv);
         }
 
-        function checkAnswer(selectedIndex) {
-            const q = questions[currentQuestion];
-            const feedbackEl = document.getElementById('feedback');
-            const buttons = document.getElementById('options-area').getElementsByTagName('button');
-            
-            for(let btn of buttons) btn.disabled = true;
+        function handleMatchClick(e) {
+            const clicked = e.target;
+            if (clicked.classList.contains('matched')) return;
 
-            feedbackEl.style.display = 'block';
-            if (selectedIndex === q.correct) {
-                score++;
-                feedbackEl.className = 'feedback correct';
-                feedbackEl.innerHTML = "<strong>✅ ถูกต้อง:</strong> " + q.explanation;
-                buttons[selectedIndex].style.backgroundColor = 'var(--success)';
-            } else {
-                feedbackEl.className = 'feedback wrong';
-                feedbackEl.innerHTML = "<strong>❌ ไม่ถูกต้อง:</strong> " + q.explanation;
-                buttons[selectedIndex].style.backgroundColor = 'var(--error)';
-                buttons[q.correct].style.border = '1px solid var(--success)';
+            // If clicking Left Side
+            if (clicked.dataset.side === 'left') {
+                if (selectedLeft) selectedLeft.classList.remove('selected');
+                selectedLeft = clicked;
+                clicked.classList.add('selected');
+            } 
+            // If clicking Right Side and Left is selected
+            else if (clicked.dataset.side === 'right' && selectedLeft) {
+                if (selectedLeft.dataset.id === clicked.dataset.id) {
+                    // Match!
+                    selectedLeft.classList.add('matched');
+                    clicked.classList.add('matched');
+                    selectedLeft.classList.remove('selected');
+                    selectedLeft = null;
+                    matchedCount++;
+                    if(matchedCount === matchData.length) {
+                        document.getElementById('match-feedback').style.display = 'block';
+                        document.getElementById('match-feedback').className = 'feedback correct';
+                        document.getElementById('match-feedback').innerHTML = "🎉 เก่งมาก! จับคู่ถูกต้องทั้งหมด";
+                    }
+                } else {
+                    // Wrong
+                    selectedLeft.classList.add('wrong-anim'); // You could add CSS shake animation
+                    setTimeout(() => {
+                        if(selectedLeft) selectedLeft.classList.remove('selected');
+                        selectedLeft = null;
+                    }, 500);
+                }
             }
-            document.getElementById('next-btn').style.display = 'block';
         }
 
-        function nextQuestion() {
-            currentQuestion++;
-            loadQuestion();
-        }
+        // --- GAME 2: QUIZ LOGIC ---
+        const quizData = [
+            {
+                q: "แดงเป็นพี่เลี้ยงเด็ก แต่แอบหลับ ปล่อยเด็กคลานตกน้ำตาย แดงมีความผิดฐานใด?",
+                opts: ["ประมาทเป็นเหตุให้ผู้อื่นถึงตาย", "ฆ่าผู้อื่นโดยเจตนา (งดเว้น)", "ละเว้นการปฏิบัติหน้าที่", "ไม่มีความผิด"],
+                c: 1,
+                reason: "พี่เลี้ยงเด็กมี 'หน้าที่ตามสัญญา' การไม่ดูแล = งดเว้น = เจตนาฆ่า"
+            },
+            {
+                q: "ข้อใดถือว่า 'ไม่มีการกระทำ' ทางอาญา?",
+                opts: ["ถูกบังคับขู่เข็ญให้ทำ", "กระทำโดยจำเป็น", "ละเมอหยิบมีดแทงตัวเอง", "บันดาลโทสะ"],
+                c: 2,
+                reason: "การละเมอ ขาดองค์ประกอบ 'ความรู้สำนึก' จึงไม่มีการกระทำ"
+            },
+            {
+                q: "เขียวเห็นคนแปลกหน้าถูกงูกัด แต่เดินหนีไม่ช่วย ทั้งที่ช่วยได้ เขียวผิดหรือไม่?",
+                opts: ["ผิดฐานฆ่าคนตาย", "ผิดฐานทำร้ายร่างกาย", "ผิดลหุโทษ (ม.374)", "ไม่ผิดเลย"],
+                c: 2,
+                reason: "เป็นหน้าที่พลเมืองทั่วไป (ละเว้น) = ผิดลหุโทษ จำคุกไม่เกิน 1 เดือน"
+            }
+        ];
+        let currentQuiz = 0;
+        let quizScore = 0;
 
-        function showFinalScore() {
-            document.querySelector('.game-area').innerHTML = `
-                <h2 style="margin-bottom:10px">สรุปผลการพิจารณา</h2>
-                <div style="font-size: 2rem; font-weight:600; color:var(--accent); margin:20px 0">${score} / ${questions.length}</div>
-                <button onclick="location.reload()" style="width:100%; background:white; color:black">เริ่มใหม่</button>
-            `;
-        }
-    </script>
-</body>
-</html>
+        function initQuizGame() {
+            currentQuiz = 0; quizScore = 0;
+            document.getElementById('quiz-score').innerText = '0';
+            loadQuizQuestion();
