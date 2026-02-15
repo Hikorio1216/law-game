@@ -3,30 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Criminal Law Academy - ณัฐพล บัวทอง</title>
+    <title>Law Game - ณัฐพล บัวทอง</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap');
-        body { font-family: 'Sarabun', sans-serif; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-blue-50">
 
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
 
-        // ไอคอนแบบ SVG (เพื่อให้โหลดได้ 100% ไม่ต้องพึ่งไฟล์นอก)
-        const IconGavel = () => <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>;
-        const IconBook = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
+        // ส่วนสร้างไอคอน (Icon Helper)
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const LucideIcon = lucide[name];
+            return LucideIcon ? <LucideIcon size={size} className={className} /> : null;
+        };
 
         const CriminalLawGame = () => {
             const [activeTab, setActiveTab] = useState('intro');
@@ -48,7 +51,7 @@
                     question: "แดงรู้ตัวว่าเมาแล้วชอบละเมอชกต่อย แต่ก็ยังกินเหล้าแล้วไปนอนข้างดำ สุดท้ายละเมอต่อยดำจริงๆ",
                     options: [
                         { text: "ผิด! เพราะรู้ตัวล่วงหน้า (Free in Cause)", correct: true, reason: "เยี่ยมมาก! แม้ตอนต่อยจะไม่รู้ตัว แต่เหตุเกิดจากการกระทำตอนมีสติ (กินเหล้า+ไปนอนข้างเขา)" },
-                        { text: "ไม่ผิด เพราะตอนต่อยไม่รู้ตัว", correct: false, reason: "ผิด! กรณีนี้เข้าข่ายทฤษฎี Free in Cause (การกระทำโดยอิสระในขณะเป็นต้นเหตุ)" }
+                        { text: "ไม่ผิด เพราะตอนต่อยไม่รู้ตัว", correct: false, reason: "ผิด! กรณีนี้เข้าข่ายทฤษฎี Free in Cause" }
                     ]
                 },
                 {
@@ -56,7 +59,7 @@
                     question: "Lifeguard เห็นคนจมน้ำแล้วยืนมองเฉยๆ เพราะหมั่นไส้ (อยากให้ตาย) จนเขาตายจริงๆ",
                     options: [
                         { text: "ผิดฐานละเว้น (ลหุโทษ)", correct: false, reason: "เบาไป! Lifeguard มีหน้าที่เฉพาะ การนิ่งเฉยถือเป็นการฆ่า" },
-                        { text: "ผิดฐานฆ่าคนตายโดยเจตนา (งดเว้น)", correct: true, reason: "ถูกต้อง! นี่คือการ 'งดเว้น' เพราะเขามีหน้าที่ป้องกันผล การไม่ทำ = การลงมือฆ่า" }
+                        { text: "ผิดฐานฆ่าคนตายโดยเจตนา (งดเว้น)", correct: true, reason: "ถูกต้อง! นี่คือการ 'งดเว้น' เพราะเขามีหน้าที่ป้องกันผล" }
                     ]
                 }
             ];
@@ -81,82 +84,104 @@
                         return (
                             <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 animate-fade-in">
                                 <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg mb-4">
-                                    <IconGavel />
+                                    <Icon name="Gavel" size={48} className="text-white" />
                                 </div>
-                                <h1 className="text-3xl md:text-4xl font-bold text-gray-800">ยินดีต้อนรับสู่ "ศาลอาญาคาเฟ่" ⚖️</h1>
-                                <p className="text-lg text-gray-600">มาเรียนรู้เรื่อง <strong>"การกระทำ (The Act)"</strong> โดย ณัฐพล บัวทอง</p>
-                                <button onClick={() => setActiveTab('definition')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:scale-105">
-                                    เริ่มบทเรียน: การกระทำคืออะไร?
+                                <h1 className="text-3xl font-bold text-gray-800">ยินดีต้อนรับสู่ "ศาลอาญาคาเฟ่" ⚖️</h1>
+                                <p className="text-lg text-gray-600">โดย ณัฐพล บัวทอง</p>
+                                <p className="text-gray-500">เรียนรู้เรื่อง "การกระทำ (The Act)" แบบที่จำไปจนวันตาย!</p>
+                                <button 
+                                    onClick={() => setActiveTab('definition')}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform active:scale-95"
+                                >
+                                    เริ่มบทเรียนที่ 1: การกระทำคืออะไร?
                                 </button>
                             </div>
                         );
+
                     case 'definition':
                         return (
-                            <div className="space-y-6 p-6 animate-fade-in">
-                                <h2 className="text-3xl font-bold text-blue-800">💭 สูตรลับ: 3 สเต็ปเทพ</h2>
+                            <div className="space-y-6 p-6 animate-fade-in overflow-y-auto">
+                                <h2 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
+                                    <Icon name="Brain" className="animate-pulse" /> สูตรลับ: 3 สเต็ปเทพ
+                                </h2>
                                 <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                                        <div className="p-4 bg-blue-50 rounded-lg"><span className="text-4xl">💭</span><h3 className="font-bold">1. คิด</h3></div>
-                                        <div className="p-4 bg-green-50 rounded-lg"><span className="text-4xl">💡</span><h3 className="font-bold">2. ตกลงใจ</h3></div>
-                                        <div className="p-4 bg-red-50 rounded-lg"><span className="text-4xl">🏃</span><h3 className="font-bold">3. กระทำ</h3></div>
+                                    <p className="mb-4">กฎหมายบอกว่า "ขยับตัวเฉยๆ ไม่ใช่การกระทำ" แต่มันต้องมี 3 อย่างนี้ครบ!</p>
+                                    <div className="grid grid-cols-1 gap-4 text-center">
+                                        <div className="p-3 bg-blue-100 rounded-lg">💭 1. คิด</div>
+                                        <div className="p-3 bg-green-100 rounded-lg">💡 2. ตกลงใจ</div>
+                                        <div className="p-3 bg-red-100 rounded-lg">🏃 3. กระทำ</div>
                                     </div>
                                 </div>
-                                <button onClick={() => setActiveTab('omission')} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">ต่อไป: งดเว้น vs ละเว้น ➡️</button>
+                                <div className="bg-red-50 p-6 rounded-xl border border-red-200">
+                                    <h3 className="font-bold text-red-700 mb-2">ระวังกับดัก! (No Action)</h3>
+                                    <ul className="text-sm space-y-2">
+                                        <li>😴 นอนละเมอ: ร่างกายขยับ แต่ใจหลับ</li>
+                                        <li>🌀 ลมบ้าหมู / สะดุ้ง: เป็น Reflex</li>
+                                    </ul>
+                                </div>
+                                <button onClick={() => setActiveTab('omission')} className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">
+                                    ไปต่อ: งดเว้น vs ละเว้น ➡️
+                                </button>
                             </div>
                         );
+
                     case 'omission':
                         return (
-                            <div className="space-y-6 p-6 animate-fade-in">
-                                <h2 className="text-3xl font-bold text-purple-800 text-center">งดเว้น vs ละเว้น</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="bg-red-50 p-6 rounded-xl border-2 border-red-200">
-                                        <h3 className="font-bold text-red-800 text-xl mb-2">งดเว้น (หน้าที่เฉพาะ)</h3>
-                                        <p className="text-sm">เช่น พ่อแม่เลี้ยงลูก, Lifeguard</p>
-                                        <p className="mt-2 font-bold text-red-600">โดนข้อหาเหมือนฆ่าเอง!</p>
-                                    </div>
-                                    <div className="bg-green-50 p-6 rounded-xl border-2 border-green-200">
-                                        <h3 className="font-bold text-green-800 text-xl mb-2">ละเว้น (หน้าที่ทั่วไป)</h3>
-                                        <p className="text-sm">เช่น คนเดินผ่านเห็นคนตกน้ำ</p>
-                                        <p className="mt-2 font-bold text-green-600">โทษเบา (ลหุโทษ)</p>
-                                    </div>
+                            <div className="space-y-6 p-6 animate-fade-in overflow-y-auto">
+                                <h2 className="text-2xl font-bold text-purple-800">งดเว้น vs ละเว้น</h2>
+                                <div className="bg-red-100 p-5 rounded-xl border-2 border-red-400">
+                                    <h3 className="font-bold text-red-800">1. การงดเว้น</h3>
+                                    <p className="text-sm">นิ่งเฉยในหน้าที่ "เฉพาะ" (เช่น พ่อแม่, ไลฟ์การ์ด)</p>
+                                    <p className="font-bold text-red-600 mt-2">🔥 ผล: เท่ากับลงมือฆ่าเอง!</p>
                                 </div>
-                                <button onClick={() => setActiveTab('quiz')} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg animate-bounce">พร้อมลุยด่านทดสอบ! ⚔️</button>
+                                <div className="bg-green-100 p-5 rounded-xl border-2 border-green-400">
+                                    <h3 className="font-bold text-green-800">2. การละเว้น</h3>
+                                    <p className="text-sm">นิ่งเฉยในหน้าที่ "พลเมืองดี" (เช่น เห็นคนตกน้ำแต่ไม่ใช่ญาติ)</p>
+                                    <p className="font-bold text-green-600 mt-2">🍃 ผล: โทษเบา (ลหุโทษ)</p>
+                                </div>
+                                <button onClick={() => setActiveTab('quiz')} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold animate-bounce">
+                                    พร้อมลุยด่านทดสอบ! ⚔️
+                                </button>
                             </div>
                         );
+
                     case 'quiz':
                         const quiz = quizData[currentQuiz];
                         return (
-                            <div className="max-w-2xl mx-auto p-6 animate-fade-in">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-xl font-bold text-gray-800">คดีที่ {currentQuiz + 1} / {quizData.length}</h2>
-                                    <span className="bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-bold">คะแนน: {score}</span>
+                            <div className="p-6 animate-fade-in">
+                                <div className="flex justify-between mb-4">
+                                    <span className="font-bold">คดีที่ {currentQuiz + 1} / 3</span>
+                                    <span className="text-blue-600 font-bold">คะแนน: {score}</span>
                                 </div>
-                                <div className="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-indigo-500">
-                                    <p className="text-xl font-medium text-gray-800 mb-6">{quiz.question}</p>
-                                    {!showAnswer ? (
-                                        <div className="space-y-4">
-                                            {quiz.options.map((option, idx) => (
-                                                <button key={idx} onClick={() => handleAnswer(option.correct)} className="w-full text-left p-4 rounded-lg border-2 border-gray-100 hover:border-indigo-500 hover:bg-indigo-50 transition font-medium">
-                                                    {option.text}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="p-4 bg-yellow-50 rounded-lg">
-                                            <p className="font-bold text-indigo-800 mb-2">คำตัดสิน:</p>
-                                            <p className="text-gray-700 mb-4">{quiz.options.find(o => o.correct).reason}</p>
-                                            <button onClick={nextQuiz} className="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">คดีต่อไป ➡️</button>
-                                        </div>
-                                    )}
+                                <div className="bg-white p-6 rounded-2xl shadow-lg border-t-8 border-indigo-500 mb-6">
+                                    <p className="text-lg font-medium">{quiz.question}</p>
                                 </div>
+                                {!showAnswer ? (
+                                    <div className="space-y-3">
+                                        {quiz.options.map((opt, i) => (
+                                            <button key={i} onClick={() => handleAnswer(opt.correct)} className="w-full text-left p-4 rounded-xl border-2 hover:bg-indigo-50 transition-all font-medium">
+                                                {opt.text}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="bg-white p-5 rounded-xl border-2 border-green-500 animate-fade-in">
+                                        <p className="font-bold text-green-700 mb-3">คำวินิจฉัย:</p>
+                                        <p className="text-gray-700 mb-6">{quiz.options.find(o => o.correct).reason}</p>
+                                        <button onClick={nextQuiz} className="w-full bg-black text-white py-3 rounded-xl font-bold">คดีต่อไป ➡️</button>
+                                    </div>
+                                )}
                             </div>
                         );
+
                     case 'summary':
                         return (
                             <div className="text-center p-8 space-y-6 animate-fade-in">
-                                <h2 className="text-4xl font-bold text-indigo-800">🎉 จบหลักสูตร! 🎉</h2>
-                                <p className="text-2xl font-bold text-gray-700">คุณได้คะแนน {score} / 3</p>
-                                <button onClick={() => {setScore(0); setCurrentQuiz(0); setShowAnswer(false); setActiveTab('intro');}} className="bg-gray-800 text-white px-8 py-3 rounded-full hover:bg-black">กลับหน้าแรก 🔄</button>
+                                <Icon name="Trophy" size={80} className="mx-auto text-yellow-500 mb-4" />
+                                <h2 className="text-3xl font-bold text-indigo-800">จบคดีความ!</h2>
+                                <p className="text-xl">คุณทำได้ {score} / 3 คะแนน</p>
+                                <p className="text-gray-600">{score === 3 ? "สุดยอด! คุณคือผู้พิทักษ์กฎหมายตัวจริง" : "เก่งมาก! ทบทวนอีกนิดเก่งแน่นอน"}</p>
+                                <button onClick={() => {setScore(0); setCurrentQuiz(0); setShowAnswer(false); setActiveTab('intro');}} className="bg-gray-800 text-white px-8 py-3 rounded-full">เล่นใหม่ 🔄</button>
                             </div>
                         );
                     default: return null;
@@ -164,13 +189,24 @@
             };
 
             return (
-                <div className="max-w-4xl mx-auto">
-                    <nav className="bg-white shadow-md p-4 sticky top-0 z-50 flex justify-between items-center rounded-b-xl">
-                        <div className="flex items-center gap-2 font-bold text-indigo-700 text-xl cursor-pointer" onClick={() => setActiveTab('intro')}>
-                            <IconBook /> <span>Law Academy</span>
+                <div className="min-h-screen flex flex-col max-w-xl mx-auto bg-white shadow-2xl">
+                    <nav className="bg-white shadow-md p-4 sticky top-0 z-50 flex justify-between items-center">
+                        <div className="flex items-center gap-2 font-bold text-indigo-700">
+                            <Icon name="BookOpen" size={20} />
+                            <span className="text-sm">Law Game โดย ณัฐพล บัวทอง</span>
                         </div>
                     </nav>
-                    <main className="mt-8">{renderContent()}</main>
+                    <main className="flex-1">{renderContent()}</main>
+                    <footer className="p-4 bg-gray-50 flex justify-around border-t">
+                        <button onClick={() => setActiveTab('intro')} className={`flex flex-col items-center ${activeTab === 'intro' ? 'text-indigo-600' : 'text-gray-400'}`}>
+                            <Icon name="Search" size={20} />
+                            <span className="text-[10px]">หน้าแรก</span>
+                        </button>
+                        <button onClick={() => setActiveTab('quiz')} className={`flex flex-col items-center ${activeTab === 'quiz' ? 'text-indigo-600' : 'text-gray-400'}`}>
+                            <Icon name="Gavel" size={20} />
+                            <span className="text-[10px]">แบบทดสอบ</span>
+                        </button>
+                    </footer>
                 </div>
             );
         };
