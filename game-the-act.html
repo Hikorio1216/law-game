@@ -443,3 +443,139 @@
             currentQuiz = 0; quizScore = 0;
             document.getElementById('quiz-score').innerText = '0';
             loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            if(currentQuiz >= quizData.length) {
+                document.getElementById('quiz-container').innerHTML = `<h3>🎉 จบเกม! คะแนน: ${quizScore}/${quizData.length}</h3><button onclick="initQuizGame()" class="next-btn" style="display:inline-block">เล่นใหม่</button>`;
+                document.getElementById('quiz-next-btn').style.display = 'none';
+                document.getElementById('quiz-feedback').style.display = 'none';
+                return;
+            }
+            const data = quizData[currentQuiz];
+            document.getElementById('question-text').innerText = `ข้อ ${currentQuiz+1}: ${data.q}`;
+            const optsDiv = document.getElementById('options-area');
+            optsDiv.innerHTML = '';
+            
+            data.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkQuizAnswer(idx);
+                optsDiv.appendChild(btn);
+            });
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('quiz-next-btn').style.display = 'none';
+        }
+
+        function checkQuizAnswer(idx) {
+            const data = quizData[currentQuiz];
+            const btns = document.querySelectorAll('.quiz-btn');
+            btns.forEach(b => b.disabled = true);
+
+            const fb = document.getElementById('quiz-feedback');
+            fb.style.display = 'block';
+
+            if(idx === data.c) {
+                quizScore++;
+                document.getElementById('quiz-score').innerText = quizScore;
+                fb.className = 'feedback correct';
+                fb.innerHTML = `✅ <strong>ถูกต้อง:</strong> ${data.reason}`;
+                btns[idx].style.background = 'var(--success)';
+            } else {
+                fb.className = 'feedback wrong';
+                fb.innerHTML = `❌ <strong>ผิด:</strong> ${data.reason}`;
+                btns[idx].style.background = 'var(--error)';
+                btns[data.c].style.border = '2px solid var(--success)';
+            }
+            document.getElementById('quiz-next-btn').style.display = 'inline-block';
+        }
+
+        function nextQuizQuestion() {
+            currentQuiz++;
+            loadQuizQuestion();
+        }
+
+        // --- GAME 3: DETECTIVE LOGIC ---
+        let step = 1;
+        
+        function initDetectiveGame() {
+            step = 1;
+            updateSteps();
+            renderStep1();
+        }
+
+        function updateSteps() {
+            document.getElementById('dot-1').className = step === 1 ? 'step-dot active' : (step > 1 ? 'step-dot completed' : 'step-dot');
+            document.getElementById('dot-2').className = step === 2 ? 'step-dot active' : (step > 2 ? 'step-dot completed' : 'step-dot');
+            document.getElementById('dot-3').className = step === 3 ? 'step-dot active' : 'step-dot';
+        }
+
+        function renderStep1() {
+            const content = document.getElementById('detective-content');
+            content.innerHTML = `
+                <div class="scenario-box">
+                    <strong>คดี:</strong> นาย "A" รู้ตัวว่าตนเองมีโรคประจำตัวคือ "โรคลมบ้าหมู" ซึ่งมักจะกำเริบเมื่ออดนอน
+                    แต่วันเกิดเหตุ นาย A จงใจอดนอนเพื่อดูบอล พอตอนเช้าขับรถ โรคกำเริบชักเกร็ง เท้าเหยียบคันเร่งพุ่งชนคนตาย
+                </div>
+                <p><strong>คำถามที่ 1:</strong> ขณะที่เท้าเหยียบคันเร่ง (ขณะชัก) นาย A มี "ความรู้สำนึก" (Consciousness) หรือไม่?</p>
+                <div class="options-grid">
+                    <button class="quiz-btn" onclick="detectiveAnswer(1, true)">มีสติครบถ้วน</button>
+                    <button class="quiz-btn" onclick="detectiveAnswer(1, false)">ไม่มีสติ (เป็นปฏิกิริยาทางกาย)</button>
+                </div>
+                <div id="d-feedback" class="feedback"></div>
+            `;
+        }
+
+        function renderStep2() {
+            const content = document.getElementById('detective-content');
+            content.innerHTML = `
+                <p>ถูกต้อง! ขณะชัก ร่างกายเคลื่อนไหวเองโดยไร้การควบคุม</p>
+                <p><strong>คำถามที่ 2:</strong> แม้ขณะชนจะไม่มีสติ แต่พิจารณาหลัก "Free in Cause" นาย A รู้ตัวล่วงหน้าและพาตัวเองไปเสี่ยงหรือไม่?</p>
+                <div class="options-grid">
+                    <button class="quiz-btn" onclick="detectiveAnswer(2, true)">ใช่ (รู้อยู่แล้วว่าอดนอนจะชัก)</button>
+                    <button class="quiz-btn" onclick="detectiveAnswer(2, false)">ไม่ใช่ (เป็นเหตุสุดวิสัย)</button>
+                </div>
+                <div id="d-feedback" class="feedback"></div>
+            `;
+        }
+
+        function renderStep3() {
+            const content = document.getElementById('detective-content');
+            content.innerHTML = `
+                <div class="scenario-box" style="text-align:center; border-color:var(--success)">
+                    <h3>👩‍⚖️ คำพิพากษา: มีความผิด!</h3>
+                    <p>แม้ขณะชนจะไม่มีการกระทำ (เพราะชัก) <br>แต่มีความผิดตามทฤษฎี <strong>Free in Cause</strong></p>
+                    <p>เพราะจำเลยปล่อยปละละเลยต้นเหตุที่ทำให้ตนเองขาดสติ</p>
+                    <button onclick="initDetectiveGame()" class="next-btn" style="display:inline-block">เริ่มคดีใหม่</button>
+                </div>
+            `;
+        }
+
+        function detectiveAnswer(currentStep, isCorrectAnswer) {
+            const fb = document.getElementById('d-feedback');
+            fb.style.display = 'block';
+            
+            // Logic for correct answers based on the specific case
+            let correct = false;
+            if (currentStep === 1 && isCorrectAnswer === false) correct = true;
+            if (currentStep === 2 && isCorrectAnswer === true) correct = true;
+
+            if (correct) {
+                fb.className = 'feedback correct';
+                fb.innerHTML = '✅ ถูกต้อง! วิเคราะห์ต่อ...';
+                setTimeout(() => {
+                    step++;
+                    updateSteps();
+                    if(step === 2) renderStep2();
+                    if(step === 3) renderStep3();
+                }, 1000);
+            } else {
+                fb.className = 'feedback wrong';
+                fb.innerHTML = '❌ วิเคราะห์ผิดพลาด ลองพิจารณาข้อเท็จจริงใหม่';
+            }
+        }
+
+    </script>
+</body>
+</html>
